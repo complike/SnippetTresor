@@ -1,38 +1,644 @@
 [
   {
-    "id": "xcode-build",
-    "title": "Xcode – Debug Build",
-    "category": "Xcode",
-    "text": "xcodebuild -project MyApp.xcodeproj -scheme MyApp -configuration Debug build"
+    "category" : "Xcode",
+    "id" : "FB9CCE8E-6B85-444D-A3F3-A4ED0014648F",
+    "text" : "xcodebuild -project MyApp.xcodeproj -scheme MyApp -configuration Debug build",
+    "title" : "Xcode – Debug Build"
   },
   {
-    "id": "xcode-tests",
-    "title": "Xcode – Tests",
-    "category": "Xcode",
-    "text": "xcodebuild test -project MyApp.xcodeproj -scheme MyApp -destination 'platform=macOS'"
+    "category" : "Xcode",
+    "id" : "0EF79F3A-DB52-4320-9797-7FADFE9922F0",
+    "text" : "xcodebuild test -project MyApp.xcodeproj -scheme MyApp -destination 'platform=macOS'",
+    "title" : "Xcode – Tests"
   },
   {
-    "id": "git-status",
-    "title": "Git – Status",
-    "category": "Git",
-    "text": "git status --short --branch"
+    "category" : "Git",
+    "id" : "881BD21F-CF8C-4FEA-B002-96B9F1599558",
+    "text" : "git status --short --branch",
+    "title" : "Git – Status"
   },
   {
-    "id": "git-diff",
-    "title": "Git – Diff prüfen",
-    "category": "Git",
-    "text": "git diff --check && git diff"
+    "category" : "Git",
+    "id" : "A9BFF7CF-4040-40EA-BA1F-AAAC610DD11C",
+    "text" : "git diff --check && git diff",
+    "title" : "Git – Diff prüfen"
   },
   {
-    "id": "prompt-analysis",
-    "title": "Prompt – Fehleranalyse",
-    "category": "Prompts",
-    "text": "Diagnostiziere zuerst den Fehler. Belege Befunde anhand konkreter Dateien und Tests. Ändere nur, was zur Behebung nötig ist."
+    "category" : "Prompts",
+    "id" : "C10C2FC0-2673-48E8-980D-DD8BE5AB64F2",
+    "text" : "Diagnostiziere zuerst den Fehler. Belege Befunde anhand konkreter Dateien und Tests. Ändere nur, was zur Behebung nötig ist.",
+    "title" : "Prompt – Fehleranalyse"
   },
   {
-    "id": "weather",
-    "title": "Wetter – Open-Meteo",
-    "category": "Wetter",
-    "text": "https://open-meteo.com"
+    "category" : "Wetter",
+    "id" : "AF6D734C-9805-4379-8F8C-E154ACBD7E4D",
+    "text" : "https:\/\/api.open-meteo.com\/v1\/forecast",
+    "title" : "Wetter – Open-Meteo"
+  },
+  {
+    "category" : "Windows 11",
+    "id" : "AA448804-F555-4C7A-9802-D4DC43A1FF3C",
+    "text" : "Über Windows-Sicherheit:\n\nÖffne Windows-Sicherheit.\nGehe zu Viren- & Bedrohungsschutz → Scanoptionen.\nWähle Microsoft Defender Antivirus (Offlineüberprüfung) und klicke auf Jetzt überprüfen.\nBestätige den Neustart. Nach dem Scan startet Windows wieder normal. \nMicrosoft\nAlternativ kannst du PowerShell als Administrator öffnen und ausführen:\n\npowershell\nStart-MpWDOScan\n\n\nDas startet den Offline-Scan und den dafür nötigen Neustart unmittelbar. Speichere vorher deine Arbeit. \nMicrosoft\n1",
+    "title" : "Offline Scan über Defender"
+  },
+  {
+    "category" : "Python",
+    "id" : "B10192E4-EB7E-486A-BCF5-31C0F1C80B62",
+    "text" : "1. `python3 <<'PY'`",
+    "title" : "Python – Skript ausführen"
+  },
+  {
+    "category" : "Shell",
+    "id" : "43D0BD9B-D765-4333-81B5-044A73AF14F3",
+    "text" : "4. `sed` only for very small deterministic edits",
+    "title" : "Shell – Text bearbeiten"
+  },
+  {
+    "category" : "Python",
+    "id" : "7D0623FE-5C82-4305-8003-53F29BD44D88",
+    "text" : "- use `python3 <<'PY'` or `cat <<'EOF'` depending on which is safer and clearer",
+    "title" : "Python – Skript ausführen"
+  },
+  {
+    "category" : "Shell",
+    "id" : "E7DA395A-DE9D-4A77-A4F1-34CD3E7C173E",
+    "text" : "4. sed nur für sehr kleine, eindeutige Änderungen",
+    "title" : "Shell – Text bearbeiten"
+  },
+  {
+    "category" : "Shell",
+    "id" : "BC21AB75-618F-4527-82FF-213776C7021E",
+    "text" : "3. `sed` only for tiny deterministic edits",
+    "title" : "Shell – Text bearbeiten"
+  },
+  {
+    "category" : "Git",
+    "id" : "79E0E446-F057-421E-AAFE-BD6617C3C02F",
+    "text" : "- `git push`",
+    "title" : "Git – Änderungen übertragen"
+  },
+  {
+    "category" : "Git",
+    "id" : "E460004D-ACD5-4881-8779-6D77199A1D0F",
+    "text" : "- `git push origin <tag>`",
+    "title" : "Git – Änderungen übertragen"
+  },
+  {
+    "category" : "Xcode",
+    "id" : "40CFDB71-BF37-4712-BB0F-BA449D0774F6",
+    "text" : "xcodebuild -project RakutenAIWeb.xcodeproj -scheme RakutenAIWeb -configuration Debug build",
+    "title" : "Xcode – Build oder Tests ausführen"
+  },
+  {
+    "category" : "Xcode",
+    "id" : "6F1D2705-05D2-415A-AE7B-CEA81FDFEF76",
+    "text" : "xcodebuild -project RakutenAIWeb.xcodeproj -scheme RakutenAIWeb -configuration Debug build 2>&1 | tee -a run.log",
+    "title" : "Xcode – Build oder Tests ausführen"
+  },
+  {
+    "category" : "Git",
+    "id" : "8DC8341B-7549-43FA-9CFB-F61D31B98ABD",
+    "text" : "git checkout -- RakutenAIWeb\/Views\/Root\/RootView.swift 2>\/dev\/null || echo \"No git\"",
+    "title" : "Git – Branch wechseln"
+  },
+  {
+    "category" : "Shell",
+    "id" : "C1A33575-5434-4295-A396-FA53C03E8AA4",
+    "text" : "if ! grep -q \"preloadAll\" RakutenAIWeb\/Views\/Root\/RootView.swift; then",
+    "title" : "Shell – Text durchsuchen"
+  },
+  {
+    "category" : "Xcode",
+    "id" : "55174835-013F-4DB4-BB27-47F72B85BEF8",
+    "text" : "xcodebuild -project RakutenAIWeb.xcodeproj -scheme RakutenAIWeb -configuration Debug build 2>&1 | tee -a run.log.txt",
+    "title" : "Xcode – Build oder Tests ausführen"
+  },
+  {
+    "category" : "Python",
+    "id" : "0294970F-8C21-42F9-9302-5E165771E627",
+    "text" : "#!\/usr\/bin\/env python3",
+    "title" : "Python – Skript ausführen"
+  },
+  {
+    "category" : "Shell",
+    "id" : "F69A5A7E-F67E-46D5-A629-68773B7D70CF",
+    "text" : "find . -type f -name \"*.swift\" | sed -e 's\/^\\.\\\/\/\/' | sort >> $OUTPUT",
+    "title" : "Shell – Text bearbeiten"
+  },
+  {
+    "category" : "Python",
+    "id" : "08D06B6A-49D4-463B-9F88-CE5746CD201C",
+    "text" : "import urllib.request",
+    "title" : "Python – HTTP-Anfrage"
+  },
+  {
+    "category" : "Python",
+    "id" : "42BDF4E8-14CE-42A7-BF1E-6BCF88D537B6",
+    "text" : "req = urllib.request.Request(url, headers=headers)",
+    "title" : "Python – HTTP-Anfrage"
+  },
+  {
+    "category" : "Python",
+    "id" : "FB712B7E-AEC4-42DD-8A47-1D2A3FD60F35",
+    "text" : "with urllib.request.urlopen(req, timeout=8) as response:",
+    "title" : "Python – HTTP-Anfrage"
+  },
+  {
+    "category" : "Shell",
+    "id" : "0300E5EB-F9AB-4859-842B-5C24B293D5A0",
+    "text" : "V=\"$(grep -m1 'MARKETING_VERSION' \"$PBX\" | sed -E 's\/.*= ([^;]+);.*\/\\1\/')\"",
+    "title" : "Shell – Text bearbeiten"
+  },
+  {
+    "category" : "Xcode",
+    "id" : "84DF99DA-9255-4D08-8A41-41F7D32CA211",
+    "text" : "xcodebuild \\",
+    "title" : "Xcode – Build oder Tests ausführen"
+  },
+  {
+    "category" : "Shell",
+    "id" : "925BE17B-C64D-45AE-A352-844B00CEE030",
+    "text" : "grep -E \"error:|warning:\" build.log",
+    "title" : "Shell – Text durchsuchen"
+  },
+  {
+    "category" : "Xcode",
+    "id" : "B27C58EC-2A52-44FF-838C-990C1BA7FB33",
+    "text" : "xcodebuild -project \"Uyanik TV m3u.xcodeproj\" -scheme \"Uyanik TV m3u\" \\",
+    "title" : "Xcode – Build oder Tests ausführen"
+  },
+  {
+    "category" : "Shell",
+    "id" : "A7843823-7C3F-47CC-9D9E-FEF871E84551",
+    "text" : "rm -rf ~\/Library\/Containers\/com.Uyanik-TV-m3u\/Data\/Library\/Application\\ Support\/UyanikTV\/",
+    "title" : "Shell – Rekursiv löschen"
+  },
+  {
+    "category" : "Shell",
+    "id" : "72FEB63E-ECAC-4B29-8FFF-D3BA156BB738",
+    "text" : "- Application Support\/WhatsApp\/Accounts\/<uuid>\/contacts.json (chmod 600, pro Konto)",
+    "title" : "Shell – Dateirechte ändern"
+  },
+  {
+    "category" : "Git",
+    "id" : "11C174F7-5428-445B-B874-9A7B9B86EAF2",
+    "text" : "1. `git status --short`",
+    "title" : "Git – Status prüfen"
+  },
+  {
+    "category" : "Shell",
+    "id" : "EFE04C49-AF6E-49A8-B229-8680C6988706",
+    "text" : "2. Relevante Dateien lesen (`cat`, `sed -n`, `grep -n`)",
+    "title" : "Shell – Text bearbeiten"
+  },
+  {
+    "category" : "Git",
+    "id" : "70466520-F20D-4062-BF8B-7DD3F9C817FE",
+    "text" : "Nur betroffene Files: git add <pfad> bzw. git add -p",
+    "title" : "Git – Änderungen vormerken"
+  },
+  {
+    "category" : "Git",
+    "id" : "54D08AE2-1B04-417C-8AFC-8F17050A53FB",
+    "text" : "Kein git add -A, kein git add .",
+    "title" : "Git – Änderungen vormerken"
+  },
+  {
+    "category" : "Shell",
+    "id" : "34B16FEE-A56B-469D-A14D-B7F4869826F7",
+    "text" : "zip -rq \"_Archiv.zip\" \"_Archiv\" && rm -rf \"_Archiv\"",
+    "title" : "Shell – Rekursiv löschen"
+  },
+  {
+    "category" : "Shell",
+    "id" : "E3C3743E-DC46-4DD2-B1E5-DADFCAB1A33D",
+    "text" : "sudo rm -rfv \/Library\/Caches\/com.apple.iconservices.store",
+    "title" : "Shell – Rekursiv löschen"
+  },
+  {
+    "category" : "Shell",
+    "id" : "417054D8-C185-4301-BB26-4C7EB6012031",
+    "text" : "lsregister -dump | grep -E \"^\\s*path:\\s\" | grep -i whatsapp",
+    "title" : "Shell – Text durchsuchen"
+  },
+  {
+    "category" : "Xcode",
+    "id" : "E395D245-F71A-4C86-9CE1-4F9B0BF776CF",
+    "text" : "- BUILD-001: xcodebuild Debug → BUILD SUCCEEDED, keine Warnings außer AppIntents (Standard)",
+    "title" : "Xcode – Build oder Tests ausführen"
+  },
+  {
+    "category" : "Shell",
+    "id" : "443BB217-596E-4926-B596-8EBCD931A945",
+    "text" : "- ISO-004: contacts.json liegt pro Konto unter Application Support\/WhatsApp\/Accounts\/<uuid>\/ (chmod 600)",
+    "title" : "Shell – Dateirechte ändern"
+  },
+  {
+    "category" : "Shell",
+    "id" : "A1DCD5DA-FCB2-4EA1-BCD7-031EC65C8C4E",
+    "text" : "`diag.log`, `grep`, `sed -n` oder ein Terminal-Kommando. Wenn keine",
+    "title" : "Shell – Text bearbeiten"
+  },
+  {
+    "category" : "Shell",
+    "id" : "3E280286-4516-48FC-92A1-1A3A04F2EFBA",
+    "text" : "3. **Erst lesen, dann ändern.** Die relevante Stelle per `grep -n` oder",
+    "title" : "Shell – Text durchsuchen"
+  },
+  {
+    "category" : "Shell",
+    "id" : "6164860E-14DE-4E5A-8ADF-ED845726945C",
+    "text" : "`sed -n 'START,ENDp'` anschauen. Nie aus dem Gedächtnis patchen.",
+    "title" : "Shell – Text bearbeiten"
+  },
+  {
+    "category" : "Git",
+    "id" : "7374DD04-BEF1-4280-8830-DC79C1C844C0",
+    "text" : "- `git add -p` bzw. `git add <pfad>` — nie `git add -A` oder `git add .`",
+    "title" : "Git – Änderungen vormerken"
+  },
+  {
+    "category" : "Git",
+    "id" : "913BF3A2-1562-49F1-8669-6671F6249F3E",
+    "text" : "- Vor Commit: `git diff --check` und `git diff --cached --stat`",
+    "title" : "Git – Änderungen prüfen"
+  },
+  {
+    "category" : "Shell",
+    "id" : "444F30F5-D92E-4C96-AD7C-A01EEEDCCE4E",
+    "text" : "- **Kurzer Kontext statt ganzer Dateien** — `grep -n` liefert die eine relevante Zeile; ganze Dateien zeigen kostet Zeit und Aufmerksamkeit",
+    "title" : "Shell – Text durchsuchen"
+  },
+  {
+    "category" : "Xcode",
+    "id" : "B390C90F-C237-45D4-95EA-EF846E1D61B4",
+    "text" : "- Build: `xcodebuild -project WhatsApp.xcodeproj -scheme WhatsApp -configuration Debug -derivedDataPath \/tmp\/WhatsAppSenderBuild build`",
+    "title" : "Xcode – Build oder Tests ausführen"
+  },
+  {
+    "category" : "Xcode",
+    "id" : "240D1902-3EA3-4DB8-B751-F86E4A07C839",
+    "text" : "xcodebuild -project WhatsApp.xcodeproj -scheme WhatsApp -configuration Debug \\",
+    "title" : "Xcode – Build oder Tests ausführen"
+  },
+  {
+    "category" : "Git",
+    "id" : "53B436EE-A219-4704-ABDC-7895A12C6186",
+    "text" : "git add -p — nur betroffene Dateien stagen",
+    "title" : "Git – Änderungen vormerken"
+  },
+  {
+    "category" : "Shell",
+    "id" : "547A1F3A-9BDF-4822-8F39-1A8DB8BF721A",
+    "text" : "rm -rf .build build",
+    "title" : "Shell – Rekursiv löschen"
+  },
+  {
+    "category" : "Git",
+    "id" : "93755E14-D291-4C59-9B5B-0AE12163A229",
+    "text" : "Prüfung: make selftest – alle 35 Tests bestanden. make js-check – JavaScript-Syntaxprüfung bestanden. git diff --check – keine Fehler.",
+    "title" : "Git – Änderungen prüfen"
+  },
+  {
+    "category" : "Git",
+    "id" : "C07FC27F-AD97-4070-9F97-8C10DA78F11B",
+    "text" : "Prüfbelege: make selftest mit 35 bestandenen Tests, make js-check und git diff --check wurden vom Builder gemeldet, von mir jedoch nicht selbst ausgeführt. Der Git-Status und die Commit-Historie wurden unabhängig geprüft. Keine Dateien verändert.",
+    "title" : "Git – Änderungen prüfen"
+  },
+  {
+    "category" : "Git",
+    "id" : "1E44BFA6-0F51-45CF-B525-5F6AD1FC6ABB",
+    "text" : "git diff --check – erfolgreich.",
+    "title" : "Git – Änderungen prüfen"
+  },
+  {
+    "category" : "Git",
+    "id" : "7625F89B-BD0D-4B1C-B9BF-0036A49AB95F",
+    "text" : "git diff --check",
+    "title" : "Git – Änderungen prüfen"
+  },
+  {
+    "category" : "Git",
+    "id" : "DE3E884D-9CFE-4B44-9722-220AE20FD746",
+    "text" : "git diff —check",
+    "title" : "Git – Änderungen prüfen"
+  },
+  {
+    "category" : "Git",
+    "id" : "D3906D67-CB62-4AC8-BA1D-CB4AC5DD0F1B",
+    "text" : "Die unabhängige Prüfung auf dem Mac ist erfolgt. Der Vorabcheck wurde erweitert, und git diff --check ist erfolgreich. Ich habe Build und Selbsttests in dieser Runde nicht selbst ausgeführt. Dabei sind zwei offene Probleme sichtbar geworden.",
+    "title" : "Git – Änderungen prüfen"
+  },
+  {
+    "category" : "Git",
+    "id" : "0E0A6F93-13F8-4A86-A219-1732EFF105D4",
+    "text" : "git diff --check ist erfolgreich. Die gemeldeten Build- und Selbsttestergebnisse habe ich nicht unabhängig erneut ausgeführt. Keine Dateien geändert.",
+    "title" : "Git – Änderungen prüfen"
+  },
+  {
+    "category" : "Git",
+    "id" : "99B5E19E-2ED5-48A7-A957-BF927AD8F599",
+    "text" : "git diff --check ist erfolgreich. Build und Selbsttests habe ich nicht erneut ausgeführt. Keine Dateien geändert.",
+    "title" : "Git – Änderungen prüfen"
+  },
+  {
+    "category" : "Git",
+    "id" : "7C6A86C3-8955-48FD-8DE4-4009EB1ADD5D",
+    "text" : "Prüfstatus: Desktop Commander erreichbar; git diff --check erfolgreich. Build und Selbsttests wurden von mir nicht erneut ausgeführt. Keine Dateien geändert.",
+    "title" : "Git – Änderungen prüfen"
+  },
+  {
+    "category" : "Git",
+    "id" : "2A9E9C06-55CB-4AAF-94DC-3422311B6213",
+    "text" : "Der unabhängige Selbsttest ist erfolgreich: make selftest – ALLES OK, Exit-Code 0. git diff --check war ebenfalls erfolgreich.",
+    "title" : "Git – Änderungen prüfen"
+  },
+  {
+    "category" : "Git",
+    "id" : "7D0F2F88-97DD-444F-B18D-4814ACF20599",
+    "text" : "Verifiziert: make selftest erfolgreich, einschließlich beider neuer Ablauf-Tests (ALLES OK, Exit-Code 0). git diff --check ebenfalls erfolgreich. Keine Dateien geändert.",
+    "title" : "Git – Änderungen prüfen"
+  },
+  {
+    "category" : "Git",
+    "id" : "F7F69892-9F27-4109-AE3A-A0962873244A",
+    "text" : "git diff --check ist erfolgreich. Build und Selbsttests",
+    "title" : "Git – Änderungen prüfen"
+  },
+  {
+    "category" : "Git",
+    "id" : "7A601A61-DDA5-4343-AFB2-5CD2B6D1ACD2",
+    "text" : "git diff --check – erfolgreich",
+    "title" : "Git – Änderungen prüfen"
+  },
+  {
+    "category" : "Shell",
+    "id" : "329C4A92-416D-42F4-8974-E0EE8939047C",
+    "text" : "5. macOS-Automatisierung: Das Skript soll bei der Ausführung automatisch prüfen, ob eine ausführbare Datei namens Start_Report.command im Ordner existiert. Wenn nicht, soll es diese Datei schreiben. Der Inhalt der .command-Datei muss das Python-Skript starten. Wichtig: Das Skript muss die Datei über chmod +x im System als ausführbar markieren, damit der Benutzer später nur noch doppelt darauf klicken muss.",
+    "title" : "Shell – Dateirechte ändern"
+  },
+  {
+    "category" : "Python",
+    "id" : "B7926F82-9EC9-4A3F-8C35-601A63D2EE79",
+    "text" : "• Nutze ausschließlich Python-Standardbibliotheken (wie urllib.request statt requests), damit das Skript ohne pip install sofort auf jedem Mac läuft.",
+    "title" : "Python – Pakete verwalten"
+  },
+  {
+    "category" : "Xcode",
+    "id" : "A7B6813D-BD49-4C00-AB07-107CC1FD55BB",
+    "text" : "3. Daten-Persistenz: Die Einträge sollen in einer lokalen prompts.json-Datei im Anwendungsordner gespeichert werden, damit sie beim Schließen nicht verloren gehen. Beim ersten Start soll die App einige sinnvolle Standard-Befehle (z. B. deine xcodebuild-Befehle) automatisch anlegen.",
+    "title" : "Xcode – Build oder Tests ausführen"
+  },
+  {
+    "category" : "Python",
+    "id" : "4945692B-C64E-4857-8449-BDAEA657B0B1",
+    "text" : "• Nutze ausschließlich integrierte Python-Bibliotheken (tkinter, json, pathlib). Es darf kein pip install py2app oder ähnliches erzwungen werden, alles muss mit reinem Python-Code gebaut werden, der die Ordnerstruktur der .app manuell schreibt und Rechte vergibt.",
+    "title" : "Python – Pakete verwalten"
+  },
+  {
+    "category" : "Python",
+    "id" : "201D4412-0C02-4329-B9F0-C4E0B852C1D1",
+    "text" : "python3 -m py_compile snippet_tresor.py tests\/test_storage.py – erfolgreich.",
+    "title" : "Python – Skript ausführen"
+  },
+  {
+    "category" : "Python",
+    "id" : "BEA5A5C5-A571-4528-B4DE-6963E97D97B0",
+    "text" : "python3 -m unittest discover -s tests -v – 3 Tests bestanden.",
+    "title" : "Python – Skript ausführen"
+  },
+  {
+    "category" : "Git",
+    "id" : "30700DD9-D594-4892-809A-C90417197017",
+    "text" : "git status --short --branch zeigt main; Snippet-Tresor\/ ist noch unversioniert. Ein Commit für dieses Projekt ist nicht nachgewiesen.",
+    "title" : "Git – Status prüfen"
+  },
+  {
+    "category" : "Git",
+    "id" : "1103BA69-5EF0-4D5D-8E37-81D9F019511D",
+    "text" : "Erneute Prüfung: Python-Syntaxprüfung erfolgreich, alle 3 Unit-Tests bestanden, App-Bundle neu erstellt und Info.plist validiert. git diff --check ohne gemeldete Fehler.",
+    "title" : "Git – Änderungen prüfen"
+  },
+  {
+    "category" : "Python",
+    "id" : "D7A2ADD1-74F6-4BA2-B1F9-86A1CCD35B2B",
+    "text" : "python3 -m py_compile snippet_tresor.py tests\/test_storage.py: erfolgreich.",
+    "title" : "Python – Skript ausführen"
+  },
+  {
+    "category" : "Python",
+    "id" : "C9828497-559F-4DCF-BD57-25A0A65BC3BB",
+    "text" : "python3 -m unittest discover -s tests -v: 3 Tests bestanden.",
+    "title" : "Python – Skript ausführen"
+  },
+  {
+    "category" : "Git",
+    "id" : "AC233666-0268-4DF4-B07E-021A82AAB858",
+    "text" : "git diff --check: keine Fehler.",
+    "title" : "Git – Änderungen prüfen"
+  },
+  {
+    "category" : "Git",
+    "id" : "6676CEE7-35AC-48F7-9916-E2BCF11671AA",
+    "text" : "git status: Snippet-Tresor\/ ist weiterhin unversioniert.",
+    "title" : "Git – Status prüfen"
+  },
+  {
+    "category" : "Git",
+    "id" : "8E6EC356-7D2B-4678-AC75-B1A94B9F76BB",
+    "text" : "git diff --check: keine gemeldeten Fehler.",
+    "title" : "Git – Änderungen prüfen"
+  },
+  {
+    "category" : "Python",
+    "id" : "D6A206C8-9F9D-404B-B0BE-22F873A3A426",
+    "text" : "python3 -m py_compile snippet_tresor.py tests\/test_storage.py",
+    "title" : "Python – Skript ausführen"
+  },
+  {
+    "category" : "Python",
+    "id" : "E5D1DC4D-4DAB-42E0-A067-2B45A30981A0",
+    "text" : "python3 -m unittest discover -s tests -v",
+    "title" : "Python – Skript ausführen"
+  },
+  {
+    "category" : "Python",
+    "id" : "9EDC4DDE-4E7B-48F8-B50A-145853E08ED0",
+    "text" : "python3 -B -m unittest discover -s tests -v: 4 Tests bestanden.",
+    "title" : "Python – Skript ausführen"
+  },
+  {
+    "category" : "Xcode",
+    "id" : "F758ECD4-CAB8-492B-AA7F-D49AD44727A6",
+    "text" : "{\"title\": \"Xcode – Debug Build\", \"category\": \"Xcode\", \"text\": \"xcodebuild -project MyApp.xcodeproj -scheme MyApp -configuration Debug build\"},",
+    "title" : "Xcode – Build oder Tests ausführen"
+  },
+  {
+    "category" : "Xcode",
+    "id" : "659FCE77-F392-4670-A84D-CCBE44BEFC31",
+    "text" : "{\"title\": \"Xcode – Tests\", \"category\": \"Xcode\", \"text\": \"xcodebuild test -project MyApp.xcodeproj -scheme MyApp -destination 'platform=macOS'\"},",
+    "title" : "Xcode – Build oder Tests ausführen"
+  },
+  {
+    "category" : "Git",
+    "id" : "C62CC8DE-DFEB-4654-92E1-A84C61EA04F5",
+    "text" : "{\"title\": \"Git – Status\", \"category\": \"Git\", \"text\": \"git status --short --branch\"},",
+    "title" : "Git – Status prüfen"
+  },
+  {
+    "category" : "Git",
+    "id" : "F203CDE1-F909-421E-80DF-2F34164E661D",
+    "text" : "{\"title\": \"Git – Diff prüfen\", \"category\": \"Git\", \"text\": \"git diff --check && git diff\"},",
+    "title" : "Git – Änderungen prüfen"
+  },
+  {
+    "category" : "Git",
+    "id" : "1DE68132-8EC2-479B-9D39-7E7D5E57A863",
+    "text" : "entries = [{\"title\": \"Test\", \"category\": \"Git\", \"text\": \"git status\"}]",
+    "title" : "Git – Status prüfen"
+  },
+  {
+    "category" : "Git",
+    "id" : "EFAA56FA-FE66-41A6-8BD3-EF6B8BEB0B76",
+    "text" : "entries = [{\"title\": \"Alt\", \"category\": \"Git\", \"text\": \"git status\"}]",
+    "title" : "Git – Status prüfen"
+  },
+  {
+    "category" : "Xcode",
+    "id" : "7B59359A-40CE-44B1-822F-D04D2169D3A2",
+    "text" : "updated = app.update_entry(entries, 0, \"Neu\", \"Xcode\", \"xcodebuild test\")",
+    "title" : "Xcode – Build oder Tests ausführen"
+  },
+  {
+    "category" : "Xcode",
+    "id" : "8D85273E-5CC1-4131-89A5-6803989C084E",
+    "text" : "self.assertEqual(updated[0], {\"title\": \"Neu\", \"category\": \"Xcode\", \"text\": \"xcodebuild test\"})",
+    "title" : "Xcode – Build oder Tests ausführen"
+  },
+  {
+    "category" : "Git",
+    "id" : "6254E57C-2C2F-4442-A2E5-49FE32B18856",
+    "text" : "{\"title\": \"One\", \"category\": \"Git\", \"text\": \"git status\"},",
+    "title" : "Git – Status prüfen"
+  },
+  {
+    "category" : "Xcode",
+    "id" : "F225A344-C6A4-4A8E-8EF4-0B4D543D0F8A",
+    "text" : "{\"title\": \"Two\", \"category\": \"Xcode\", \"text\": \"xcodebuild test\"},",
+    "title" : "Xcode – Build oder Tests ausführen"
+  },
+  {
+    "category" : "Git",
+    "id" : "C31D0E57-D48B-4608-9A52-EF24A4FA2F9A",
+    "text" : "entries = [{\"title\": \"One\", \"category\": \"Git\", \"text\": \"git status\"}]",
+    "title" : "Git – Status prüfen"
+  },
+  {
+    "category" : "Git",
+    "id" : "BEC7DF01-8C4F-4391-8A82-CF8990DEB149",
+    "text" : "app.create_entry([], \"\", \"Git\", \"git status\")",
+    "title" : "Git – Status prüfen"
+  },
+  {
+    "category" : "Git",
+    "id" : "D9FC34CA-4345-4308-B859-F1BEE1070527",
+    "text" : "app.update_entry([], 0, \"Title\", \"Git\", \"git status\")",
+    "title" : "Git – Status prüfen"
+  },
+  {
+    "category" : "Python",
+    "id" : "FEB19B9B-F0FD-4990-9F17-7BC742CA9EDA",
+    "text" : "Native macOS-App-Hülle mit Tkinter-GUI; keine pip-Abhängigkeiten.",
+    "title" : "Python – Pakete verwalten"
+  },
+  {
+    "category" : "Python",
+    "id" : "C2422598-84A6-4603-B6A3-B77CD3C7F5D9",
+    "text" : "exec python3 \"$APP_DIR\/Contents\/Resources\/snippet_tresor.py\"",
+    "title" : "Python – Skript ausführen"
+  },
+  {
+    "category" : "Shell",
+    "id" : "F3CDD3D4-C85E-480B-ADA8-C809E4F7F777",
+    "text" : "chmod 755 \"$APP\/Contents\/MacOS\/PromptManager\"",
+    "title" : "Shell – Dateirechte ändern"
+  },
+  {
+    "category" : "Shell",
+    "id" : "426D39EA-C931-4515-BFFA-DFFB9CD79B97",
+    "text" : "chmod -R u+rwX,go+rX \"$APP\"",
+    "title" : "Shell – Dateirechte ändern"
+  },
+  {
+    "category" : "Shell",
+    "id" : "8B5D7A6B-644C-4060-8128-3B49BBB0894B",
+    "text" : "rm -rf \"$APP\"",
+    "title" : "Shell – Rekursiv löschen"
+  },
+  {
+    "category" : "Python",
+    "id" : "EEBDD8B9-B08A-40DE-A812-B3A0D07A8798",
+    "text" : "request = urllib.request.Request(url, headers={\"User-Agent\": USER_AGENT})",
+    "title" : "Python – HTTP-Anfrage"
+  },
+  {
+    "category" : "Python",
+    "id" : "1202DB21-CEA7-4FA3-A96C-682C4E5E73F3",
+    "text" : "with urllib.request.urlopen(request, timeout=TIMEOUT_SECONDS) as response:",
+    "title" : "Python – HTTP-Anfrage"
+  },
+  {
+    "category" : "Python",
+    "id" : "A0AACC38-DEEF-4FFD-9D9B-8724E9440B47",
+    "text" : "request = urllib.request.Request(RSS_URL, headers={\"User-Agent\": USER_AGENT})",
+    "title" : "Python – HTTP-Anfrage"
+  },
+  {
+    "category" : "Python",
+    "id" : "AA7224B5-B258-4FEB-9B0E-E99BDB8C92DB",
+    "text" : "'exec \/usr\/bin\/env python3 \"$(dirname \"$0\")\/daten_profiler.py\"\\n'",
+    "title" : "Python – Skript ausführen"
+  },
+  {
+    "category" : "Shell",
+    "id" : "E6D1F996-6D23-4720-90D7-3B6362FD5F9F",
+    "text" : "LAUNCHER_PATH.chmod(current_mode | stat.S_IXUSR | stat.S_IXGRP | stat.S_IXOTH)",
+    "title" : "Shell – Dateirechte ändern"
+  },
+  {
+    "category" : "Python",
+    "id" : "5C8A9F48-F6DD-4612-8A4A-F5C6AB992341",
+    "text" : "python3 daten_profiler.py",
+    "title" : "Python – Skript ausführen"
+  },
+  {
+    "category" : "Python",
+    "id" : "5C061037-FF0E-4E44-8C71-675699892C77",
+    "text" : "python3 main.py",
+    "title" : "Python – Skript ausführen"
+  },
+  {
+    "category" : "Python",
+    "id" : "0B05ED36-7D84-410C-B3EC-0A7016191871",
+    "text" : "- `python3 -m unittest discover -s tests -v` — **OK**, 11 Tests bestanden.",
+    "title" : "Python – Skript ausführen"
+  },
+  {
+    "category" : "Python",
+    "id" : "20102E5B-6A0B-4A51-A0AA-2B02C88F91E1",
+    "text" : "- `python3 -m py_compile calculator.py main.py tests\/test_calculator.py` — **OK**.",
+    "title" : "Python – Skript ausführen"
+  },
+  {
+    "category" : "TEST2",
+    "id" : "F5617788-9675-45E7-8930-D9A6E46CA802",
+    "text" : "TEST2",
+    "title" : "TEST2"
+  },
+  {
+    "category" : "asdf",
+    "id" : "646B928E-B6B7-4A0D-8E0F-9CBDF28740CD",
+    "text" : "asdf",
+    "title" : "asdf"
   }
 ]
