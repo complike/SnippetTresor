@@ -628,5 +628,281 @@
     "id" : "20102E5B-6A0B-4A51-A0AA-2B02C88F91E1",
     "text" : "- `python3 -m py_compile calculator.py main.py tests\/test_calculator.py` — **OK**.",
     "title" : "Python – Skript ausführen"
+  },
+  {
+    "category" : "Xcode",
+    "id" : "BE23FBBD-B8D2-40D6-BA3C-45BD564FF7A8",
+    "text" : "1. Voraussetzungen prüfen: `xcodebuild -version`, `swift --version`, `xcodegen --version`.",
+    "title" : "Xcode – Build oder Tests ausführen"
+  },
+  {
+    "category" : "Xcode",
+    "id" : "330C97DB-806D-4456-B273-B719208FF68B",
+    "text" : "2. Projekt generieren: `xcodegen generate --spec project.yml`.",
+    "title" : "Xcode – Projekt generieren"
+  },
+  {
+    "category" : "Xcode",
+    "id" : "5388D7E8-7985-418B-9EDD-D367244C0F36",
+    "text" : "3. Unit-Tests: `xcodebuild test -project SnippetTresor.xcodeproj -scheme SnippetTresor -destination 'platform=macOS' -derivedDataPath build\/DerivedData test`.",
+    "title" : "Xcode – Build oder Tests ausführen"
+  },
+  {
+    "category" : "Git",
+    "id" : "DACAF04A-5760-424B-A363-7C4C8DD90AE8",
+    "text" : "6. Vor Commit: `git diff --check` und Release-Build erneut ausführen.",
+    "title" : "Git – Änderungen prüfen"
+  },
+  {
+    "category" : "Git",
+    "id" : "229C660B-C0A0-485C-B6E1-421DF01F33B3",
+    "text" : "| Git | `git status`, `git add`, `git commit`, `git checkout`, `git push`, `git diff` |",
+    "title" : "Git – Status prüfen"
+  },
+  {
+    "category" : "Xcode",
+    "id" : "50FE014F-241C-4072-80C3-53F123E95946",
+    "text" : "| Xcode | `xcodebuild`, `xcodegen`, `xcrun`, `simctl` |",
+    "title" : "Xcode – Build oder Tests ausführen"
+  },
+  {
+    "category" : "Python",
+    "id" : "2B8B9FBA-45B5-4876-825D-A5F6E65F47C2",
+    "text" : "| Python | `python3`, `pip`\/`pip3`, `urllib.request` |",
+    "title" : "Python – Skript ausführen"
+  },
+  {
+    "category" : "Shell",
+    "id" : "DE27EB40-5414-4E59-A4B7-0547C8E7F305",
+    "text" : "| Shell | `sed`, `grep`, `chmod`, `rm -rf` |",
+    "title" : "Shell – Text bearbeiten"
+  },
+  {
+    "category" : "Git",
+    "id" : "A65D011C-95E3-46EC-A365-47554823B7C5",
+    "text" : "git diff --check lässt sich nicht ausführen, weil SnippetTresor kein Git-Repository ist.",
+    "title" : "Git – Änderungen prüfen"
+  },
+  {
+    "category" : "Xcode",
+    "id" : "F318612F-11C2-4F38-AC7A-EB8ED013AA9C",
+    "text" : "xcodebuild test ... test – TEST SUCCEEDED, 4 Tests, 0 Fehler.",
+    "title" : "Xcode – Build oder Tests ausführen"
+  },
+  {
+    "category" : "Git",
+    "id" : "7E11C8D6-B775-4D16-8407-212C418D20F6",
+    "text" : "2. Erstelle einen eigenen Branch: git checkout -b feature\/project-analyzer.",
+    "title" : "Git – Branch wechseln"
+  },
+  {
+    "category" : "Git",
+    "id" : "F517C995-E401-4434-90A9-F30A30A2128D",
+    "text" : "• Kategorie „Git“: Zeilen mit git status, git add, git commit, git checkout, git push, git diff.",
+    "title" : "Git – Status prüfen"
+  },
+  {
+    "category" : "Xcode",
+    "id" : "BCE25392-0856-437A-A225-850739B1DDA2",
+    "text" : "• Kategorie „Xcode“: Zeilen mit xcodebuild, xcodegen, xcrun, simctl.",
+    "title" : "Xcode – Build oder Tests ausführen"
+  },
+  {
+    "category" : "Python",
+    "id" : "7DD3EE7C-9147-411E-9107-F65D2A04F54F",
+    "text" : "• Kategorie „Python“: Zeilen mit python3, pip, urllib.request.",
+    "title" : "Python – Skript ausführen"
+  },
+  {
+    "category" : "Shell",
+    "id" : "1196C96A-D02F-4B46-B9BC-1D5207FF02D1",
+    "text" : "• Kategorie „Shell“: Zeilen mit sed, grep, chmod, rm -rf.",
+    "title" : "Shell – Text bearbeiten"
+  },
+  {
+    "category" : "Git",
+    "id" : "1DDCE6F6-9E95-4895-A4AC-9B523C7AE996",
+    "text" : "• Titel-Generierung: Generiere automatisch einen sauberen Titel (z. B. wenn die Zeile git status enthält, wird der Titel automatisch „Git – Status prüfen“).",
+    "title" : "Git – Status prüfen"
+  },
+  {
+    "category" : "Xcode",
+    "id" : "4BD3476C-0C05-42BD-B40C-FA8E107AE84A",
+    "text" : "Bringe nach erfolgreichem Build alle .md-Dateien auf den aktuellen Stand. Dokumentiere die neue Heuristik-Matrix in der ARCHITECTURE.md und setze den Haken bei „GUI-Manuelltest“ in der ROADMAP.md. Generiere das Projekt mit xcodegen generate, baue es über .\/scripts\/build.sh und stelle die fertige .app im dist\/-Ordner bereit",
+    "title" : "Xcode – Projekt generieren"
+  },
+  {
+    "category" : "Xcode",
+    "id" : "E7950ED4-F57D-4409-BF1B-851AF502F408",
+    "text" : "F-3 [NIEDRIG] SnippetTresor.xcodeproj\/xcshareddata\/xcschemes\/SnippetTresor.xcscheme:19 – BuildableName lautet SnippetTresor.app, während project.yml mit PRODUCT_NAME: Snippet-Tresor einen abweichenden Produktnamen vorgibt. Das kann Scheme- und Testlaufprobleme verursachen, falls die generierte Konfiguration diesen Widerspruch übernimmt. – Fix: Nach xcodegen generate die tatsächlich generierte Scheme-Konfiguration prüfen und einen konsistenten Produktnamen sicherstellen.",
+    "title" : "Xcode – Projekt generieren"
+  },
+  {
+    "category" : "Xcode",
+    "id" : "7C18C8E8-EB69-4FE1-A6A8-A0A2476E539E",
+    "text" : "xcodebuild test \\",
+    "title" : "Xcode – Build oder Tests ausführen"
+  },
+  {
+    "category" : "Xcode",
+    "id" : "A69E9E0E-64A2-4CE5-9E1A-7A7CCEEFB409",
+    "text" : "Testergebnis: xcodebuild test erfolgreich – 6 Tests bestanden, 0 Fehler. Die Tests liefen mit DerivedData unter \/tmp; die Projektquellen wurden nicht verändert.",
+    "title" : "Xcode – Build oder Tests ausführen"
+  },
+  {
+    "category" : "Git",
+    "id" : "147EDB85-0B84-4AC0-BD8B-A135F0C369CE",
+    "text" : "Git: main und feature\/project-analyzer zeigen auf denselben Commit. Arbeitsverzeichnis sauber; git diff-tree --check ohne Beanstandung.",
+    "title" : "Git – Änderungen prüfen"
+  },
+  {
+    "category" : "Xcode",
+    "id" : "67FE1A63-2235-4FA1-912A-6274F11D398B",
+    "text" : "Tests: xcodebuild test erfolgreich, Exit-Code 0.",
+    "title" : "Xcode – Build oder Tests ausführen"
+  },
+  {
+    "category" : "Shell",
+    "id" : "17917393-6C49-4415-9508-8C204E6F8A5D",
+    "text" : "F-2 [MITTEL] Tests\/SnippetStoreTests.swift:68–101 – Neue Tests für alle unterstützten Dateitypen und wiederholte Scans sind nicht bestanden. Der unabhängige Testlauf meldet 7 Tests, 3 Fehler: firstScan.count ist 6 statt 7, chmod +x run.sh wird nicht erkannt und der Import enthält 12 statt 7 Snippets. – Fix: Testannahmen und Import-Deduplizierung prüfen; danach Tests erneut ausführen.",
+    "title" : "Shell – Dateirechte ändern"
+  },
+  {
+    "category" : "Git",
+    "id" : "75CD5F5A-15CE-43F4-82F2-22335D8F92B4",
+    "text" : "F-4 [MITTEL] Tests\/SnippetStoreTests.swift – Uncommittete Änderung vorhanden (git status: M Tests\/SnippetStoreTests.swift), obwohl die Nachricht ein sauberes Arbeitsverzeichnis behauptet. – Fix: Tests korrigieren, erfolgreich ausführen und die Änderung durch den Builder committen; Reviewer bleibt read-only.",
+    "title" : "Git – Status prüfen"
+  },
+  {
+    "category" : "Xcode",
+    "id" : "BEEDCC81-0AC5-446D-83DB-4E11EBD9EF5B",
+    "text" : "Beleg: xcodebuild test erfolgreich – 7 Tests, 0 Fehler.",
+    "title" : "Xcode – Build oder Tests ausführen"
+  },
+  {
+    "category" : "Git",
+    "id" : "63189441-2A9E-42F4-989A-9376E8881816",
+    "text" : "Arbeitsverzeichnis sauber; git diff-tree --check ohne Beanstandung.",
+    "title" : "Git – Änderungen prüfen"
+  },
+  {
+    "category" : "Shell",
+    "id" : "D4FE1A95-1E72-476B-A11F-49EC24F96038",
+    "text" : "Die Testannahmen wurden korrigiert. Die sieben Dateitypen werden mit tatsächlich erkennbaren, unterschiedlichen Befehlen geprüft. Insbesondere wird chmod +x run.sh jetzt explizit getestet. Der Test prüft außerdem den erneuten Scan und Import ohne Duplikate.",
+    "title" : "Shell – Dateirechte ändern"
+  },
+  {
+    "category" : "Xcode",
+    "id" : "A4CE2B90-F689-4562-AD20-127F04CF5D16",
+    "text" : "Beleg: xcodebuild test erfolgreich – 7 Tests, 0 Fehler. Der Release-Build ist ebenfalls erfolgreich.",
+    "title" : "Xcode – Build oder Tests ausführen"
+  },
+  {
+    "category" : "Git",
+    "id" : "78FF6A67-B6DC-4F19-A44A-341C7DDC0152",
+    "text" : "git diff-tree --check: ohne Beanstandung.",
+    "title" : "Git – Änderungen prüfen"
+  },
+  {
+    "category" : "Git",
+    "id" : "48A97D0A-F3F4-4EBC-B476-0570804D5ABA",
+    "text" : "Git-Arbeitsverzeichnis: sauber (git status --short --branch zeigt nur ## main).",
+    "title" : "Git – Status prüfen"
+  },
+  {
+    "category" : "Git",
+    "id" : "1AEA08EA-D732-4ADB-BFF1-7FED4C474FD6",
+    "text" : "F-4 [MITTEL]: FIXED – git status zeigt ein sauberes Arbeitsverzeichnis (main). main und feature\/project-analyzer zeigen beide auf 8eb5eeb.",
+    "title" : "Git – Status prüfen"
+  },
+  {
+    "category" : "Git",
+    "id" : "DEF602B3-DEE0-44A5-AB6E-84EA59F79CDA",
+    "text" : "git add web\/index.html web\/prompts.json",
+    "title" : "Git – Änderungen vormerken"
+  },
+  {
+    "category" : "Git",
+    "id" : "A5D78EF5-EF16-4751-9727-E9204E5700C8",
+    "text" : "git commit -m \"Dashboard-Automatisierung: Snippets aktualisiert\"",
+    "title" : "Git – Commit erstellen"
+  },
+  {
+    "category" : "Git",
+    "id" : "17CF3930-DABE-4E0D-89F1-1333A44BD697",
+    "text" : "git push origin main",
+    "title" : "Git – Änderungen übertragen"
+  },
+  {
+    "category" : "Xcode",
+    "id" : "FDF2C989-AC68-4C60-9BA2-CDCB63053841",
+    "text" : "xcodebuild ... test – 7 Tests bestanden, 0 Fehler.",
+    "title" : "Xcode – Build oder Tests ausführen"
+  },
+  {
+    "category" : "Git",
+    "id" : "5D9DAF53-C59D-4AC7-8DFA-FCE465EB0146",
+    "text" : "git diff --check – bestanden.",
+    "title" : "Git – Änderungen prüfen"
+  },
+  {
+    "category" : "Git",
+    "id" : "A192EB3D-B3AA-4123-8832-1E6C722B60EA",
+    "text" : "git add .",
+    "title" : "Git – Änderungen vormerken"
+  },
+  {
+    "category" : "Git",
+    "id" : "D0EC1B42-C178-4692-B4EF-0B7D086EFC8D",
+    "text" : "git commit -m \"Deploy to GitHub Pages\"",
+    "title" : "Git – Commit erstellen"
+  },
+  {
+    "category" : "Shell",
+    "id" : "BDA81C08-E652-4EC4-8CD4-F71DBC48BF49",
+    "text" : "rm -rf build\/DerivedData && \\",
+    "title" : "Shell – Rekursiv löschen"
+  },
+  {
+    "category" : "Xcode",
+    "id" : "1CC574E5-FBCB-4FC8-B79E-08076E0F935A",
+    "text" : "xcodegen generate --spec project.yml && \\",
+    "title" : "Xcode – Projekt generieren"
+  },
+  {
+    "category" : "Xcode",
+    "id" : "185B3200-7E91-48EF-AD4A-4ED607F05275",
+    "text" : "- F-3 [NIEDRIG] ABGELEHNT (nicht-blockierender Metadatenunterschied): XcodeGen regeneriert `BuildableName` als `SnippetTresor.app` anhand des Targetnamens. Der reale Produktpfad wird über `PRODUCT_NAME: Snippet-Tresor` festgelegt; `scripts\/build.sh` prüft und kopiert genau `Snippet-Tresor.app`, und Test-Host sowie Release-Build verwenden diesen Pfad erfolgreich. Eine manuelle Änderung der generierten Scheme-Datei wird beim nächsten `xcodegen generate` überschrieben. Keine funktionale Beeinträchtigung nachgewiesen.",
+    "title" : "Xcode – Projekt generieren"
+  },
+  {
+    "category" : "Git",
+    "id" : "F93705E4-F181-43EA-B686-EABBC8B892FD",
+    "text" : "if git diff --cached --quiet; then",
+    "title" : "Git – Änderungen prüfen"
+  },
+  {
+    "category" : "Xcode",
+    "id" : "73B2C7B1-6CA5-4B59-BF64-3A865E94D7F7",
+    "text" : "command -v xcodegen >\/dev\/null || { echo \"Fehler: xcodegen fehlt (brew install xcodegen)\" >&2; exit 1; }",
+    "title" : "Xcode – Projekt generieren"
+  },
+  {
+    "category" : "Xcode",
+    "id" : "9FAFBF7C-0ACC-4D29-8E2A-7C011AA500AE",
+    "text" : "xcodegen generate --spec project.yml",
+    "title" : "Xcode – Projekt generieren"
+  },
+  {
+    "category" : "Xcode",
+    "id" : "71EA6303-8CC8-46AE-8AED-BFA2FCFC4393",
+    "text" : "xcodebuild -project SnippetTresor.xcodeproj -scheme SnippetTresor -configuration Release -destination 'platform=macOS' -derivedDataPath \"$ROOT\/build\/DerivedData\" build",
+    "title" : "Xcode – Build oder Tests ausführen"
+  },
+  {
+    "category" : "Shell",
+    "id" : "F870621A-8407-47B9-BA1F-131E9AD57027",
+    "text" : "rm -rf \"$ROOT\/dist\/Snippet-Tresor.app\"",
+    "title" : "Shell – Rekursiv löschen"
   }
 ]
