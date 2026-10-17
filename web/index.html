@@ -1,0 +1,90 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light">
+<title>Snippet Tresor — Dashboard</title>
+<style>
+:root{font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","SF Pro Text",sans-serif;color:#202124;background:#f3f4f7;font-synthesis:none;text-rendering:optimizeLegibility;-webkit-font-smoothing:antialiased;--muted:#777d89;--line:#e5e7ec;--blue:#3478f6}
+*{box-sizing:border-box}body{margin:0;min-height:100vh}button,input{font:inherit}button{cursor:pointer}
+/* .nav steuert die Kategorie-Buttons: Desktop als vertikale Liste, mobil als horizontal scrollbarere Leiste. */
+.app{min-height:100vh;display:grid;grid-template-columns:252px minmax(0,1fr)}
+.sidebar{background:linear-gradient(155deg,#25262d,#17181d);color:#f7f7fa;padding:28px 17px;display:flex;flex-direction:column;gap:32px}
+.brand{display:flex;align-items:center;gap:12px;padding:0 8px}.brand-mark{width:40px;height:40px;border-radius:13px;background:linear-gradient(145deg,#66a7ff,#2763d8);display:grid;place-items:center;box-shadow:0 7px 22px #0755bb44}.brand-mark svg{width:22px;height:22px}.brand-name{font-size:15px;font-weight:750;letter-spacing:-.3px}.brand-sub{font-size:11px;color:#a9abb5;margin-top:4px}
+.side-label{padding:0 11px;color:#858995;font-size:10px;letter-spacing:1.4px;font-weight:750;text-transform:uppercase;margin-bottom:10px}.nav{display:grid;gap:5px}.nav button{width:100%;border:1px solid transparent;border-radius:10px;padding:11px 12px;background:transparent;color:#c5c7d0;display:flex;align-items:center;gap:11px;text-align:left;transition:background .18s,color .18s}.nav button:hover{background:#ffffff0d;color:white}.nav button.active{background:#363841;color:#fff;border-color:#ffffff0b}.nav svg{width:17px;height:17px;flex-shrink:0}.nav-label{flex:1;font-size:13px}.count{font-size:11px;color:#9094a0;font-variant-numeric:tabular-nums}.nav button.active .count{color:#e1e3e9}.side-footer{margin-top:auto;border-top:1px solid #ffffff15;padding:18px 8px 0;color:#9295a0;font-size:11px;line-height:1.7}
+main{padding:42px clamp(22px,4.2vw,64px) 54px;min-width:0;max-width:1560px;width:100%;margin:0 auto}.topline{display:flex;align-items:center;justify-content:space-between;gap:18px;margin-bottom:34px}.eyebrow{font-size:10px;letter-spacing:1.5px;text-transform:uppercase;color:#7b818c;font-weight:750;margin-bottom:10px}.heading{font-size:clamp(29px,3vw,41px);letter-spacing:-1.7px;line-height:1.1;font-weight:760;margin:0}.subtitle{color:#777d88;font-size:14px;margin:11px 0 0}.total-pill{border:1px solid #e3e5e9;background:#fff;border-radius:99px;padding:10px 14px;font-size:12px;color:#626773;white-space:nowrap}.total-pill strong{color:#202124}
+.search-wrap{position:relative;margin-bottom:27px}.search-wrap svg{position:absolute;left:16px;top:50%;transform:translateY(-50%);width:18px;height:18px;color:#8b909a;pointer-events:none}.search{height:52px;width:100%;border:1px solid #e1e4e9;background:#fff;border-radius:15px;padding:0 48px 0 45px;outline:none;color:#24262b;box-shadow:0 3px 13px #20212405;transition:border .2s,box-shadow .2s}.search:focus{border-color:#a6c7ff;box-shadow:0 0 0 4px #3478f612}.search::placeholder{color:#9a9ea7}.shortcut{position:absolute;right:14px;top:50%;transform:translateY(-50%);border:1px solid #e6e8ed;border-radius:6px;padding:3px 7px;color:#999da6;font-size:10px;background:#fafbfc}
+.toolbar{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:17px}.section-title{font-size:15px;font-weight:750;letter-spacing:-.25px}.results{font-size:12px;color:#898e98;margin-top:5px}.sort-note{font-size:11px;color:#8b9099}
+.cards{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}.snippet-card{background:#fff;border:1px solid #e7e9ee;border-radius:17px;padding:20px;min-width:0;display:flex;flex-direction:column;min-height:235px;box-shadow:0 3px 12px #17192304;transition:transform .18s,border-color .18s,box-shadow .18s;animation:rise .28s both}.snippet-card:hover{transform:translateY(-2px);border-color:#d6dbe4;box-shadow:0 12px 28px #1719230b}.card-top{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:17px}.category-tag{font-size:10px;font-weight:750;letter-spacing:.45px;color:#416ba7;background:#eef5ff;border:1px solid #e1ecff;padding:5px 8px;border-radius:7px}.category-tag[data-category="Git"]{color:#925a32;background:#fff3e9;border-color:#ffe8d7}.category-tag[data-category="Prompts"]{color:#6b55a1;background:#f3efff;border-color:#e8e0ff}.category-tag[data-category="Wetter"]{color:#26766e;background:#e9f8f5;border-color:#d6f0eb}.card-index{font-size:10px;color:#b2b6bf;font-variant-numeric:tabular-nums}.card-title{font-size:16px;font-weight:750;letter-spacing:-.35px;margin:0 0 10px;line-height:1.35}.card-text{font-family:"SFMono-Regular",Menlo,Monaco,monospace;font-size:11px;line-height:1.7;color:#737985;background:#f7f8fa;border:1px solid #eff0f3;border-radius:10px;padding:12px;white-space:pre-wrap;overflow-wrap:anywhere;max-height:110px;overflow:auto;flex:1}.card-bottom{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:16px}.snippet-type{font-size:10px;color:#9a9ea7}.copy-btn{display:inline-flex;align-items:center;justify-content:center;gap:7px;padding:8px 11px;border:1px solid #e3e6eb;border-radius:9px;background:#fff;color:#454a55;font-size:11px;font-weight:700;transition:background .2s,color .2s,border-color .2s;white-space:nowrap}.copy-btn svg{width:14px;height:14px}.copy-btn:hover{background:#f4f8ff;border-color:#c9dcff;color:#145fc4}.copy-btn.copied{background:#e9f8ef;border-color:#c9ebd5;color:#237a43}.copy-btn.error{background:#fff0f0;border-color:#ffd5d5;color:#a72b2b}.empty{grid-column:1/-1;padding:64px 20px;text-align:center;background:#fff;border:1px dashed #dfe2e8;border-radius:18px;color:#7a7f89}.empty strong{display:block;color:#343740;font-size:16px;margin-bottom:7px}.empty p{font-size:13px;margin:0}
+@keyframes rise{from{opacity:0;transform:translateY(7px)}to{opacity:1;transform:translateY(0)}}@media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;transition-duration:.01ms!important;scroll-behavior:auto!important}}
+@media(max-width:1120px){.cards{grid-template-columns:repeat(2,minmax(0,1fr))}.app{grid-template-columns:220px minmax(0,1fr)}main{padding-top:32px}}
+@media(max-width:700px){.app{display:block}.sidebar{padding:16px;gap:16px}.brand{padding:0 4px}.sidebar .side-label,.side-footer{display:none}.nav{display:flex;overflow-x:auto;gap:6px;padding-bottom:2px}.nav button{width:auto;flex:0 0 auto;padding:9px 11px;gap:7px}.nav-label{white-space:nowrap}.count{display:none}main{padding:27px 16px 35px}.topline{margin-bottom:25px;align-items:flex-start}.heading{font-size:31px}.subtitle{font-size:12px;line-height:1.5}.total-pill{font-size:11px;padding:8px 10px}.cards{grid-template-columns:1fr}.snippet-card{min-height:210px}.sort-note{display:none}}
+</style>
+</head>
+<body>
+<div class="app">
+<aside class="sidebar">
+  <div class="brand"><div class="brand-mark" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.7"><path d="M5 7.5A2.5 2.5 0 0 1 7.5 5h9A2.5 2.5 0 0 1 19 7.5v9a2.5 2.5 0 0 1-2.5 2.5h-9A2.5 2.5 0 0 1 5 16.5z"/><path d="M9 9h6M9 12h6M9 15h3"/></svg></div><div><div class="brand-name">Snippet Tresor</div><div class="brand-sub">Deine Code-Sammlung</div></div></div>
+  <div><div class="side-label">Bibliothek</div><nav class="nav" id="categoryNav" aria-label="Snippet-Kategorien"></nav></div>
+  <div class="side-footer">Ein Ort für deine besten Ideen.<br>Ordentlich gesammelt. Sofort bereit.</div>
+</aside>
+<main>
+  <header class="topline"><div><div class="eyebrow">Deine Bibliothek</div><h1 class="heading">Snippet Dashboard</h1><p class="subtitle">Deine wichtigsten Befehle. Nur einen Klick entfernt.</p></div><div class="total-pill"><strong id="totalCount">6</strong> Snippets</div></header>
+  <div class="search-wrap"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="10.8" cy="10.8" r="6.8"/><path d="m16 16 4.2 4.2"/></svg><input class="search" id="searchInput" type="search" placeholder="Snippets durchsuchen …" aria-label="Snippets nach Titel, Kategorie oder Text durchsuchen" autocomplete="off"><span class="shortcut" aria-hidden="true">/</span></div>
+  <div class="toolbar"><div><div class="section-title" id="listTitle">Alle Snippets</div><div class="results" id="resultCount" aria-live="polite">6 Einträge</div></div><div class="sort-note">Lokal · Sofort durchsuchbar</div></div>
+  <section class="cards" id="snippetGrid" aria-label="Snippet-Karten"></section>
+</main>
+</div>
+<script>
+"use strict";
+let snippets = [];
+const grid=document.getElementById("snippetGrid"),nav=document.getElementById("categoryNav"),searchInput=document.getElementById("searchInput");
+let categories=[];let activeCategory="Alle Snippets",searchTerm="";
+const icons={
+"Alle Snippets":'<rect x="4" y="4" width="6" height="6" rx="1"/><rect x="14" y="4" width="6" height="6" rx="1"/><rect x="4" y="14" width="6" height="6" rx="1"/><rect x="14" y="14" width="6" height="6" rx="1"/>',
+"Xcode":'<path d="m8 8-4 4 4 4M16 8l4 4-4 4M14 5l-4 14"/>',
+"Git":'<circle cx="7" cy="6" r="2"/><circle cx="17" cy="18" r="2"/><circle cx="17" cy="7" r="2"/><path d="M7 8v5a5 5 0 0 0 5 5h3M9 6h4a4 4 0 0 1 4 4v6"/>',
+"Prompts":'<path d="m8 5-5 7 5 7M16 5l5 7-5 7M14 4l-4 16"/>',
+"Wetter":'<circle cx="12" cy="12" r="9"/><path d="M8 15a4.5 4.5 0 0 1 8 0M12 3v2M4.5 7l1.4 1M19.5 7l-1.4 1"/>'
+};
+function escapeHTML(value){return String(value).replace(/[&<>"']/g,char=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[char]));}
+function icon(category){return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">'+(icons[category]||icons["Alle Snippets"])+'</svg>';}
+function renderNav(){nav.innerHTML=categories.map(category=>{const count=category==="Alle Snippets"?snippets.length:snippets.filter(item=>item.category===category).length;return '<button type="button" class="'+(activeCategory===category?"active":"")+'" data-category="'+escapeHTML(category)+'" aria-pressed="'+(activeCategory===category)+'">'+icon(category)+'<span class="nav-label">'+escapeHTML(category)+'</span><span class="count">'+count+'</span></button>';}).join("");}
+function filteredSnippets(){return snippets.filter(item=>{const categoryMatch=activeCategory==="Alle Snippets"||item.category===activeCategory;const searchable=(item.title+" "+item.category+" "+item.text).toLocaleLowerCase("de");return categoryMatch&&searchable.includes(searchTerm);});}
+const copyIcon='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="8" y="8" width="12" height="12" rx="2"/><path d="M16 8V5a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h3"/></svg>';
+const checkIcon='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 12 4 4L19 6"/></svg>';
+function renderCards(){const items=filteredSnippets();document.getElementById("totalCount").textContent=snippets.length;document.getElementById("resultCount").textContent=items.length+" "+(items.length===1?"Eintrag":"Einträge");document.getElementById("listTitle").textContent=activeCategory;if(!items.length){grid.innerHTML='<div class="empty"><strong>Keine Snippets gefunden</strong><p>Ändere den Suchbegriff oder wähle eine andere Kategorie.</p></div>';return;}grid.innerHTML=items.map((item,index)=>'<article class="snippet-card" style="animation-delay:'+Math.min(index*35,210)+'ms"><div class="card-top"><span class="category-tag" data-category="'+escapeHTML(item.category)+'">'+escapeHTML(item.category)+'</span><span class="card-index">'+String(index+1).padStart(2,"0")+'</span></div><h2 class="card-title">'+escapeHTML(item.title)+'</h2><div class="card-text">'+escapeHTML(item.text)+'</div><div class="card-bottom"><span class="snippet-type">Text-Snippet</span><button class="copy-btn" type="button" data-copy="'+escapeHTML(item.id)+'" aria-label="Snippet kopieren: '+escapeHTML(item.title)+'">'+copyIcon+'<span>Kopieren</span></button></div></article>').join("");}
+nav.addEventListener("click",event=>{const button=event.target.closest("button[data-category]");if(!button)return;activeCategory=button.dataset.category;renderNav();renderCards();});
+searchInput.addEventListener("input",()=>{searchTerm=searchInput.value.trim().toLocaleLowerCase("de");renderCards();});
+document.addEventListener("click",async event=>{const button=event.target.closest("button[data-copy]");if(!button)return;const item=snippets.find(entry=>entry.id===button.dataset.copy);if(!item)return;try{if(!navigator.clipboard||!navigator.clipboard.writeText)throw new Error("Clipboard API nicht verfügbar");await navigator.clipboard.writeText(item.text);button.classList.remove("error");button.classList.add("copied");button.innerHTML=checkIcon+"<span>Kopiert!</span>";button.setAttribute("aria-label",item.title+" kopiert");window.setTimeout(()=>{if(!button.isConnected)return;button.classList.remove("copied");button.innerHTML=copyIcon+"<span>Kopieren</span>";button.setAttribute("aria-label","Snippet kopieren: "+item.title);},1500);}catch(error){button.classList.add("error");button.textContent="Kopieren fehlgeschlagen";button.title="Die Clipboard API benötigt in der Regel HTTPS oder localhost und eine Benutzeraktion.";window.setTimeout(()=>{if(!button.isConnected)return;button.classList.remove("error");button.innerHTML=copyIcon+"<span>Kopieren</span>";button.title="";},1800);}});
+document.addEventListener("keydown",event=>{if(event.key==="/"&&!["INPUT","TEXTAREA"].includes(document.activeElement.tagName)&&!event.metaKey&&!event.ctrlKey&&!event.altKey){event.preventDefault();searchInput.focus();}if(event.key==="Escape"&&document.activeElement===searchInput){searchInput.value="";searchTerm="";renderCards();searchInput.blur();}});
+fetch("./prompts.json")
+  .then(response => {
+    if (!response.ok) throw new Error("HTTP " + response.status);
+    return response.json();
+  })
+  .then(data => {
+    if (!Array.isArray(data) || !data.every(item =>
+      item && typeof item.title === "string" &&
+      typeof item.category === "string" && typeof item.text === "string"
+    )) throw new Error("Ungültiges Snippet-Format");
+    snippets = data.map((item, index) => ({
+      id: String(item.id ?? index),
+      title: item.title,
+      category: item.category,
+      text: item.text
+    }));
+    categories = ["Alle Snippets", ...new Set(snippets.map(item => item.category))];
+    renderNav();
+    renderCards();
+  })
+  .catch(error => {
+    console.error("Snippets konnten nicht geladen werden:", error);
+    document.getElementById("listTitle").textContent = "Dashboard nicht verfügbar";
+    document.getElementById("resultCount").textContent = "Die Snippets konnten nicht geladen werden.";
+    grid.innerHTML = '<div class="empty"><strong>Daten konnten nicht geladen werden</strong><p>Bitte lade die Seite später erneut.</p></div>';
+  });
+</script>
+</body>
+</html>

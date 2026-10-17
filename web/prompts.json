@@ -1,0 +1,38 @@
+[
+  {
+    "id": "xcode-build",
+    "title": "Xcode – Debug Build",
+    "category": "Xcode",
+    "text": "xcodebuild -project MyApp.xcodeproj -scheme MyApp -configuration Debug build"
+  },
+  {
+    "id": "xcode-tests",
+    "title": "Xcode – Tests",
+    "category": "Xcode",
+    "text": "xcodebuild test -project MyApp.xcodeproj -scheme MyApp -destination 'platform=macOS'"
+  },
+  {
+    "id": "git-status",
+    "title": "Git – Status",
+    "category": "Git",
+    "text": "git status --short --branch"
+  },
+  {
+    "id": "git-diff",
+    "title": "Git – Diff prüfen",
+    "category": "Git",
+    "text": "git diff --check && git diff"
+  },
+  {
+    "id": "prompt-analysis",
+    "title": "Prompt – Fehleranalyse",
+    "category": "Prompts",
+    "text": "Diagnostiziere zuerst den Fehler. Belege Befunde anhand konkreter Dateien und Tests. Ändere nur, was zur Behebung nötig ist."
+  },
+  {
+    "id": "weather",
+    "title": "Wetter – Open-Meteo",
+    "category": "Wetter",
+    "text": "https://open-meteo.com"
+  }
+]
