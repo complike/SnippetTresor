@@ -628,11 +628,5 @@
     "id" : "20102E5B-6A0B-4A51-A0AA-2B02C88F91E1",
     "text" : "- `python3 -m py_compile calculator.py main.py tests\/test_calculator.py` — **OK**.",
     "title" : "Python – Skript ausführen"
-  },
-  {
-    "category" : "TEST2",
-    "id" : "F5617788-9675-45E7-8930-D9A6E46CA802",
-    "text" : "TEST2",
-    "title" : "TEST2"
   }
 ]
