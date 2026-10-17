@@ -63,8 +63,53 @@ import Combine
  }
  private func commit(_ next: [Snippet]) {
   guard !loadFailed else { errorMessage = "Speichern ist gesperrt, weil die vorhandene JSON-Datei nicht geladen werden konnte. Sichere oder repariere die Datei zuerst."; return }
-  do { try persist(next); snippets = next }
-  catch { errorMessage = "Speichern fehlgeschlagen. Die bisherigen Daten bleiben erhalten.\n\n\(error.localizedDescription)" }
+  do {
+   try persist(next)
+   snippets = next
+   launchDashboardDeploymentIfConfigured()
+  } catch {
+   errorMessage = "Speichern fehlgeschlagen. Die bisherigen Daten bleiben erhalten.\n\n\(error.localizedDescription)"
+  }
+ }
+ private func launchDashboardDeploymentIfConfigured() {
+  let supportURL = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask)[0]
+   .appendingPathComponent("Snippet-Tresor", isDirectory: true)
+   .appendingPathComponent("prompts.json")
+  guard fileURL.standardizedFileURL == supportURL.standardizedFileURL else { return }
+
+  let environment = ProcessInfo.processInfo.environment
+  let scriptURL: URL
+  if let configuredPath = environment["SNIPPET_TRESOR_DEPLOY_SCRIPT"], !configuredPath.isEmpty {
+   scriptURL = URL(fileURLWithPath: configuredPath)
+  } else {
+   scriptURL = FileManager.default.homeDirectoryForCurrentUser
+    .appendingPathComponent("Downloads/Eigene Apps/SnippetTresor/scripts/deploy_to_github_pages.sh")
+  }
+  guard FileManager.default.isExecutableFile(atPath: scriptURL.path) else {
+   errorMessage = "Snippet gespeichert, aber Dashboard-Deployment-Skript fehlt oder ist nicht ausführbar: \(scriptURL.path)"
+   return
+  }
+
+  DispatchQueue.global(qos: .utility).async { [weak self] in
+   let process = Process()
+   process.executableURL = URL(fileURLWithPath: "/bin/bash")
+   process.arguments = [scriptURL.path]
+   process.standardOutput = FileHandle.nullDevice
+   process.standardError = FileHandle.nullDevice
+   process.terminationHandler = { [weak self] process in
+    guard process.terminationStatus != 0 else { return }
+    DispatchQueue.main.async {
+     self?.errorMessage = "Snippet gespeichert, aber Dashboard-Deployment fehlgeschlagen (Exit-Code \(process.terminationStatus))."
+    }
+   }
+   do {
+    try process.run()
+   } catch {
+    DispatchQueue.main.async {
+     self?.errorMessage = "Snippet gespeichert, Dashboard-Deployment konnte nicht gestartet werden: \(error.localizedDescription)"
+    }
+   }
+  }
  }
  private func persist(_ values: [Snippet]) throws {
   try FileManager.default.createDirectory(at: fileURL.deletingLastPathComponent(), withIntermediateDirectories: true)
