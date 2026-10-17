@@ -1,0 +1,15 @@
+# Xcode / Swift build products
+build/
+dist/
+DerivedData/
+*.xcuserstate
+xcuserdata/
+
+# macOS / editor noise
+.DS_Store
+*.swp
+*~
+
+# Local relay state and transcript
+.kichat/
+chat-ki.md
