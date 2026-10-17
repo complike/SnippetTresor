@@ -65,6 +65,47 @@ import XCTest
   XCTAssertFalse(findings.contains { $0.text == "echo hello" })
  }
 
+ func testProjectAnalyzerScansEverySupportedFileTypeAndIgnoresUnsupportedFiles() throws {
+  let root = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString, isDirectory: true)
+  try FileManager.default.createDirectory(at: root, withIntermediateDirectories: true)
+  defer { try? FileManager.default.removeItem(at: root) }
+
+  let fixtures: [(String, String)] = [
+   ("run.sh", "git status --short"),
+   ("tool.py", "git status --branch"),
+   ("notes.md", "git status --porcelain"),
+   ("Makefile", "git status --ignored"),
+   ("makefile", "git status --untracked-files"),
+   ("GNUmakefile", "git status --renames"),
+   ("WORKFLOW.md", "git status --short --branch")
+  ]
+  for (index, fixture) in fixtures.enumerated() {
+   let fileDirectory = root.appendingPathComponent("fixture-\(index)", isDirectory: true)
+   try FileManager.default.createDirectory(at: fileDirectory, withIntermediateDirectories: true)
+   try fixture.1.write(to: fileDirectory.appendingPathComponent(fixture.0), atomically: true, encoding: .utf8)
+  }
+  try "git commit -m ignored".write(to: root.appendingPathComponent("ignored.txt"), atomically: true, encoding: .utf8)
+
+  let analyzer = ProjectAnalyzer()
+  let firstScan = try analyzer.scan(directory: root)
+  let secondScan = try analyzer.scan(directory: root)
+  XCTAssertEqual(firstScan.count, fixtures.count)
+  for (_, expectedText) in fixtures {
+   XCTAssertTrue(firstScan.contains { $0.text == expectedText }, "Expected to scan supported fixture content: \(expectedText)")
+  }
+  XCTAssertEqual(Set(secondScan.map(\.text)), Set(firstScan.map(\.text)))
+  XCTAssertFalse(firstScan.contains { $0.text == "git commit -m ignored" })
+
+  let storeURL = try temporaryURL()
+  try Data("[]".utf8).write(to: storeURL)
+  let store = SnippetStore(fileURL: storeURL)
+  store.importFindings(firstScan)
+  let countAfterFirstImport = store.snippets.count
+  store.importFindings(secondScan)
+  XCTAssertEqual(countAfterFirstImport, fixtures.count)
+  XCTAssertEqual(store.snippets.count, countAfterFirstImport, "A complete repeated scan/import must not create duplicate snippets")
+ }
+
  func testAnalyzerImportIsIdempotentAndPreservesExistingLegacyFields() throws {
   let url = try temporaryURL()
   try Data(#"[{"title":"Existing","category":"Git","text":"git status","legacy":"keep"}]"#.utf8).write(to: url)
