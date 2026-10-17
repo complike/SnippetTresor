@@ -1,24 +1,29 @@
 # Snippet-Tresor (SwiftUI)
 
-Native macOS port of the Python/Tkinter Snippet-Tresor. Supports category filtering, case- and diacritic-insensitive search, create/edit/delete, clipboard copy and JSON persistence.
+Native macOS-App zum lokalen Verwalten, Suchen und Bearbeiten von Snippets. Der integrierte Projekt-Analyzer importiert passende Befehlszeilen aus einem ausgewählten Quellprojekt – ohne KI und ohne Netzwerkzugriff.
 
-## Original Python implementation
-The source project used for parity is located at:
-`/Users/denis/Downloads/Eigene Apps/KI-Chat/Snippet-Tresor/snippet_tresor.py`
+## Voraussetzungen
 
-The original Python storage tests are in that project's `tests/test_storage.py`. They remain in the Python project; this repository has independent Swift XCTest coverage.
+- macOS 14 oder neuer
+- Xcode 27.1 / Swift 6.4 und Apple Silicon
+- XcodeGen (`brew install xcodegen`)
 
-## Requirements
-- macOS 14 or later; built and tested on Apple Silicon with Xcode 27.1 / Swift 6.4.
-- XcodeGen (`brew install xcodegen`) to regenerate the project from `project.yml`.
+## Build und Tests
 
-## Build and tests
-Run `./scripts/build.sh`. The script generates `SnippetTresor.xcodeproj`, builds a Release app and stages `dist/Snippet-Tresor.app`.
+- Projekt generieren: `xcodegen generate --spec project.yml`
+- Release-App bauen und bereitstellen: `./scripts/build.sh`
+- Tests: `xcodebuild test -project SnippetTresor.xcodeproj -scheme SnippetTresor -destination 'platform=macOS' -derivedDataPath build/DerivedData test`
 
-Run the Swift unit tests with `xcodebuild test -project SnippetTresor.xcodeproj -scheme SnippetTresor -destination 'platform=macOS' -derivedDataPath build/DerivedData test`. The XCTest target covers CRUD/validation, legacy unknown JSON fields, malformed JSON protection and a failed initial write.
+Das Build-Skript legt `dist/Snippet-Tresor.app` an.
 
-## Data
-The app stores `prompts.json` in `~/Library/Application Support/Snippet-Tresor/`. On first launch it seeds the six defaults from the Python implementation. Existing Python JSON records with `title`, `category`, and `text` are accepted. Unknown additional JSON fields are preserved during edits. Atomic writes use Foundation `Data.write(options: .atomic)`.
+## Projekt scannen
 
-## Notes
-A malformed or unreadable existing file is not overwritten; the error is presented in-app. User data remains local. No network access is used.
+„Projekt scannen“ öffnet einen nativen Ordnerdialog. Der Analyzer durchsucht rekursiv `.sh`, `.py`, `.md`, `WORKFLOW.md` und Makefiles und klassifiziert erkannte Befehle als Git, Xcode, Python oder Shell. Bereits vorhandene identische Befehlstexte werden übersprungen. Einzelheiten zur Regex-Matrix stehen in `ARCHITECTURE.md`.
+
+## Daten
+
+Die App speichert `prompts.json` unter `~/Library/Application Support/Snippet-Tresor/`. Bestehende Python-Datensätze sind kompatibel. Unbekannte JSON-Felder bleiben erhalten und Schreibvorgänge sind atomar. Fehlerhafte oder unlesbare Dateien werden nicht automatisch überschrieben; Fehler erscheinen in der App.
+
+## Manueller GUI-Test
+
+Vor Freigabe den Start, CRUD, Neustart/Persistenz, den Projektordnerdialog, Klassifikation, erneuten Scan ohne Duplikate und Fehlerfälle manuell prüfen.

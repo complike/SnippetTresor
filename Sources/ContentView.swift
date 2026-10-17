@@ -4,6 +4,7 @@ struct ContentView: View {
  @State private var selectedCategory = "Alle"
  @State private var searchText = ""
  @State private var copiedID: UUID?
+ @State private var isScanning = false
  private var visible: [Snippet] { store.filtered(category: selectedCategory, query: searchText) }
  var body: some View {
   NavigationSplitView {
@@ -20,6 +21,8 @@ struct ContentView: View {
       Text("\(visible.count) Einträge").foregroundStyle(.secondary)
      }
      Spacer()
+     Button(action: chooseProjectToScan) { Label("Projekt scannen", systemImage: "doc.text.magnifyingglass") }
+      .buttonStyle(.bordered).disabled(isScanning)
      Button(action:store.requestNewSnippet) { Label("Snippet hinzufügen",systemImage:"plus") }.buttonStyle(.borderedProminent)
     }.padding(.horizontal,24).padding(.top,22).padding(.bottom,16)
     HStack { Image(systemName:"magnifyingglass").foregroundStyle(.secondary)
@@ -51,6 +54,44 @@ struct ContentView: View {
    Button("Löschen",role:.destructive){if let item=store.pendingDelete {store.delete(item)}}
    Button("Abbrechen",role:.cancel){store.pendingDelete=nil}
   } message:{Text("„\(store.pendingDelete?.title ?? "")“ wird dauerhaft entfernt.")}
+ }
+
+ private func chooseProjectToScan() {
+  guard let window = NSApp.keyWindow else {
+   store.errorMessage = "Der Ordnerdialog kann nicht geöffnet werden, weil kein App-Fenster aktiv ist."
+   return
+  }
+  let panel = NSOpenPanel()
+  panel.title = "Projektordner auswählen"
+  panel.message = "Wähle den Ordner, dessen Befehle als Snippets importiert werden sollen."
+  panel.canChooseDirectories = true
+  panel.canChooseFiles = false
+  panel.allowsMultipleSelection = false
+  panel.canCreateDirectories = false
+  isScanning = true
+  panel.beginSheetModal(for: window) { response in
+   guard response == .OK, let directory = panel.url else {
+    Task { @MainActor in isScanning = false }
+    return
+   }
+   Task { @MainActor in
+    defer { isScanning = false }
+    let didAccess = directory.startAccessingSecurityScopedResource()
+    defer { if didAccess { directory.stopAccessingSecurityScopedResource() } }
+    do {
+     let findings = try ProjectAnalyzer().scan(directory: directory)
+     let before = store.snippets.count
+     store.errorMessage = nil
+     store.importFindings(findings)
+     if store.errorMessage == nil {
+      let added = store.snippets.count - before
+      if added == 0 { store.errorMessage = "Der Scan ist abgeschlossen. Es wurden keine neuen Befehle gefunden." }
+     }
+    } catch {
+     store.errorMessage = "Der Projektordner konnte nicht vollständig analysiert werden.\n\n\(error.localizedDescription)"
+    }
+   }
+  }
  }
 }
 private struct SnippetCard: View {

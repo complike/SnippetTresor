@@ -38,6 +38,17 @@ import Combine
   } else { next.append(item) }
   commit(next)
  }
+ func importFindings(_ findings: [ProjectAnalyzer.Finding]) {
+  guard !loadFailed else { errorMessage = "Import nicht möglich, weil die vorhandene JSON-Datei nicht geladen werden konnte."; return }
+  let existingTexts = Set(snippets.map(\.text))
+  var seen = existingTexts
+  var additions: [Snippet] = []
+  for finding in findings where seen.insert(finding.text).inserted {
+   additions.append(Snippet(title: finding.title, category: finding.category, text: finding.text))
+  }
+  guard !additions.isEmpty else { return }
+  commit(snippets + additions)
+ }
  func delete(_ snippet: Snippet) {
   guard snippets.contains(where: { $0.id == snippet.id }) else { errorMessage = SnippetStoreError.missingEntry.localizedDescription; return }
   commit(snippets.filter { $0.id != snippet.id }); pendingDelete = nil

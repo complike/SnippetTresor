@@ -53,6 +53,33 @@ import XCTest
   XCTAssertTrue(store.snippets.isEmpty)
  }
 
+ func testProjectAnalyzerClassifiesSupportedCommandsAndIgnoresOtherFiles() throws {
+  let root = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString, isDirectory: true)
+  try FileManager.default.createDirectory(at: root, withIntermediateDirectories: true)
+  defer { try? FileManager.default.removeItem(at: root) }
+  try "git status --short\nxcodebuild build\npython3 tool.py\nrm -rf old\necho hello".write(to: root.appendingPathComponent("WORKFLOW.md"), atomically: true, encoding: .utf8)
+  try "git commit -m test".write(to: root.appendingPathComponent("ignored.txt"), atomically: true, encoding: .utf8)
+  let findings = try ProjectAnalyzer().scan(directory: root)
+  XCTAssertEqual(findings.map(\.category), ["Git", "Xcode", "Python", "Shell"])
+  XCTAssertEqual(findings.first?.title, "Git – Status prüfen")
+  XCTAssertFalse(findings.contains { $0.text == "echo hello" })
+ }
+
+ func testAnalyzerImportIsIdempotentAndPreservesExistingLegacyFields() throws {
+  let url = try temporaryURL()
+  try Data(#"[{"title":"Existing","category":"Git","text":"git status","legacy":"keep"}]"#.utf8).write(to: url)
+  let store = SnippetStore(fileURL: url)
+  store.importFindings([
+   .init(category: "Git", title: "Git – Status prüfen", text: "git status"),
+   .init(category: "Git", title: "Git – Commit erstellen", text: "git commit -m test"),
+   .init(category: "Git", title: "Git – Commit erstellen", text: "git commit -m test")
+  ])
+  XCTAssertEqual(store.snippets.count, 2)
+  let saved = try XCTUnwrap(JSONSerialization.jsonObject(with: Data(contentsOf: url)) as? [[String: Any]])
+  XCTAssertEqual(saved[0]["legacy"] as? String, "keep")
+  XCTAssertEqual(saved[1]["text"] as? String, "git commit -m test")
+ }
+
  func testFailedInitialWriteIsReportedAndNoCrash() {
   let store = SnippetStore(fileURL: URL(fileURLWithPath:"/dev/null/snippet-tresor/prompts.json"))
   XCTAssertNotNil(store.errorMessage)
