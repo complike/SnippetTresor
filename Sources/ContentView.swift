@@ -69,23 +69,48 @@ private struct SnippetCard: View {
  }
 }
 private struct SnippetEditor: View {
- @EnvironmentObject private var store:SnippetStore
+ @EnvironmentObject private var store: SnippetStore
  @Environment(\.dismiss) private var dismiss
- let snippet:Snippet?; let categories:[String]; let onSave:(String,String,String)->Void
+ let snippet: Snippet?; let categories:[String]; let onSave:(String,String,String)->Void
  @State private var title:String; @State private var category:String; @State private var text:String
  init(snippet:Snippet?,categories:[String],onSave:@escaping(String,String,String)->Void) {
   self.snippet=snippet;self.categories=categories;self.onSave=onSave
   _title=State(initialValue:snippet?.title ?? "");_category=State(initialValue:snippet?.category ?? "");_text=State(initialValue:snippet?.text ?? "")
  }
- var body:some View {
-  VStack(alignment:.leading,spacing:16) {
-   HStack { Text(snippet == nil ? "Snippet hinzufügen":"Snippet bearbeiten").font(.title2.bold());Spacer();Button("Abbrechen"){dismiss()}.keyboardShortcut(.cancelAction);Button("Speichern"){onSave(title,category,text)}.keyboardShortcut(.defaultAction).buttonStyle(.borderedProminent) }
-   Form {
-    TextField("Titel",text:$title)
-    TextField("Kategorie wählen oder neu eingeben",text:$category)
-    if !categories.isEmpty { HStack {Text("Vorhandene Kategorien").foregroundStyle(.secondary);Spacer();Menu("Auswählen"){ForEach(categories,id:\.self){item in Button(item){category=item}}} } }
-    VStack(alignment:.leading,spacing:6){Text("Snippet / Befehl");TextEditor(text:$text).font(.system(.body,design:.monospaced)).frame(minHeight:180).overlay(RoundedRectangle(cornerRadius:6).stroke(Color.secondary.opacity(0.25)))}
+ var body: some View {
+  VStack(alignment: .leading, spacing: 16) {
+   HStack { 
+    Text(snippet == nil ? "Snippet hinzufügen" : "Snippet bearbeiten").font(.title2.bold())
+    Spacer()
+    Button("Abbrechen") { dismiss() }.keyboardShortcut(.cancelAction)
+    Button("Speichern") { onSave(title, category, text) }.keyboardShortcut(.defaultAction).buttonStyle(.borderedProminent) 
    }
-  }.padding(22).frame(minWidth:520,minHeight:420)
+   
+   // Formular nur für die kurzen einzeiligen Eingabefelder nutzen
+   Form {
+    TextField("Titel", text: $title)
+    TextField("Kategorie wählen oder neu eingeben", text: $category)
+    if !categories.isEmpty { 
+     HStack {
+      Text("Vorhandene Kategorien").foregroundStyle(.secondary)
+      Spacer()
+      Menu("Auswählen") { ForEach(categories, id: \.self) { item in Button(item) { category = item } } }
+     } 
+    }
+   }
+   
+   Divider()
+   
+   // Das große Eingabefeld liegt frei im Fenster und dehnt sich maximal nach links und rechts aus
+   VStack(alignment: .leading, spacing: 6) {
+    Text("Snippet / Befehl").font(.subheadline.bold())
+    TextEditor(text: $text)
+     .font(.system(.body, design: .monospaced))
+     .frame(minHeight: 220)
+     .overlay(RoundedRectangle(cornerRadius: 6).stroke(Color.secondary.opacity(0.25)))
+   }
+  }
+  .padding(22)
+  .frame(minWidth: 640, minHeight: 480)
  }
 }
