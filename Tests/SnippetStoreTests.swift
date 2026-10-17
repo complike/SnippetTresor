@@ -71,13 +71,13 @@ import XCTest
   defer { try? FileManager.default.removeItem(at: root) }
 
   let fixtures: [(String, String)] = [
-   ("run.sh", "git status --short"),
-   ("tool.py", "git status --branch"),
+   ("run.sh", "chmod +x run.sh"),
+   ("tool.py", "python3 tool.py"),
    ("notes.md", "git status --porcelain"),
-   ("Makefile", "git status --ignored"),
-   ("makefile", "git status --untracked-files"),
-   ("GNUmakefile", "git status --renames"),
-   ("WORKFLOW.md", "git status --short --branch")
+   ("Makefile", "xcodebuild build"),
+   ("makefile", "git add notes.md"),
+   ("GNUmakefile", "git diff --stat"),
+   ("WORKFLOW.md", "git push origin main")
   ]
   for (index, fixture) in fixtures.enumerated() {
    let fileDirectory = root.appendingPathComponent("fixture-\(index)", isDirectory: true)
