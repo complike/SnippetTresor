@@ -1,6 +1,7 @@
 import SwiftUI
 @main struct SnippetTresorApp: App {
  @StateObject private var store = SnippetStore()
+ init() { NSWindow.allowsAutomaticWindowTabbing = false }
  var body: some Scene {
   WindowGroup { ContentView().environmentObject(store).frame(minWidth: 820, minHeight: 520) }
    .windowStyle(.titleBar)

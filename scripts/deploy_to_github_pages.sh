@@ -22,11 +22,17 @@ fi
 
 # Serialize deployments: the app starts one per save, and parallel git commits would collide.
 LOCK="$(git rev-parse --absolute-git-dir)/snippet-tresor-deploy.lock"
+# A lock older than 10 minutes is left over from a killed run.
+find "$LOCK" -maxdepth 0 -type d -mmin +10 -exec rmdir {} \; 2>/dev/null || true
+ACQUIRED=0
 for _ in $(seq 1 120); do
-  mkdir "$LOCK" 2>/dev/null && break
+  if mkdir "$LOCK" 2>/dev/null; then ACQUIRED=1; break; fi
   sleep 0.5
 done
-[[ -d "$LOCK" ]] || { echo "Fehler: Deployment-Sperre konnte nicht übernommen werden." >&2; exit 1; }
+if [[ "$ACQUIRED" -ne 1 ]]; then
+  echo "Fehler: Ein anderer Upload läuft noch (Sperre $LOCK). Bitte später erneut speichern." >&2
+  exit 1
+fi
 trap 'rmdir "$LOCK" 2>/dev/null || true' EXIT
 
 # Pick up merged changes from GitHub first, otherwise the push is rejected.

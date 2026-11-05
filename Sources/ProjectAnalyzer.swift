@@ -165,6 +165,12 @@ struct ProjectAnalyzer {
         return words.filter { proseWords.contains($0) }.count >= 2
     }
 
+    /// Quotes a value for POSIX shells unless it only contains safe characters.
+    static func shellQuoted(_ value: String) -> String {
+        if !value.isEmpty, value.range(of: #"^[A-Za-z0-9_@%+=:,./-]+$"#, options: .regularExpression) != nil { return value }
+        return "'" + value.replacingOccurrences(of: "'", with: "'\\''") + "'"
+    }
+
     private static func hasBalancedQuotes(_ line: String) -> Bool {
         var single = false, double = false, escaped = false
         for char in line {
@@ -195,7 +201,17 @@ struct ProjectAnalyzer {
 
     // MARK: Folder scan
 
+    struct ScanReport {
+        var findings: [Finding] = []
+        /// Candidate files that could not be read (no permission or not UTF-8), relative to the scanned folder.
+        var unreadableFiles: [String] = []
+    }
+
     func scan(directory: URL) throws -> [Finding] {
+        try scanReport(directory: directory).findings
+    }
+
+    func scanReport(directory: URL) throws -> ScanReport {
         let manager = FileManager.default
         guard let enumerator = manager.enumerator(
             at: directory,
@@ -205,8 +221,14 @@ struct ProjectAnalyzer {
             throw ScanError.cannotEnumerate(directory.path)
         }
 
-        var findings: [Finding] = []
+        var report = ScanReport()
         var seen = Set<String>()
+        let rootPath = directory.standardizedFileURL.resolvingSymlinksInPath().path
+        func relativePath(_ url: URL) -> String {
+            let path = url.standardizedFileURL.resolvingSymlinksInPath().path
+            guard path.hasPrefix(rootPath) else { return url.lastPathComponent }
+            return String(path.dropFirst(rootPath.count)).trimmingCharacters(in: CharacterSet(charactersIn: "/"))
+        }
         while let fileURL = enumerator.nextObject() as? URL {
             let values = try? fileURL.resourceValues(forKeys: [.isRegularFileKey, .isSymbolicLinkKey, .isDirectoryKey, .fileSizeKey])
             if values?.isDirectory == true {
@@ -216,14 +238,17 @@ struct ProjectAnalyzer {
             }
             guard values?.isRegularFile == true, values?.isSymbolicLink != true,
                   (values?.fileSize ?? 0) <= Self.maxFileSize,
-                  let kind = FileKind(url: fileURL),
-                  let data = try? Data(contentsOf: fileURL),
-                  let source = String(data: data, encoding: .utf8) else { continue }
-            for finding in Self.extract(from: source, kind: kind) where seen.insert(finding.text).inserted {
-                findings.append(finding)
+                  let kind = FileKind(url: fileURL) else { continue }
+            guard let data = try? Data(contentsOf: fileURL), let source = String(data: data, encoding: .utf8) else {
+                report.unreadableFiles.append(relativePath(fileURL))
+                continue
+            }
+            let packageDirectory = relativePath(fileURL.deletingLastPathComponent())
+            for finding in Self.extract(from: source, kind: kind, packageDirectory: packageDirectory) where seen.insert(finding.text).inserted {
+                report.findings.append(finding)
             }
         }
-        return findings
+        return report
     }
 
     enum FileKind {
@@ -242,7 +267,8 @@ struct ProjectAnalyzer {
         }
     }
 
-    static func extract(from source: String, kind: FileKind) -> [Finding] {
+    /// `packageDirectory` is the folder of the file relative to the scan root; it keeps nested `package.json` scripts runnable from the root.
+    static func extract(from source: String, kind: FileKind, packageDirectory: String = "") -> [Finding] {
         switch kind {
         case .shell:
             return joinedLines(source.components(separatedBy: .newlines)).compactMap { classify($0) }
@@ -258,8 +284,10 @@ struct ProjectAnalyzer {
         case .packageJSON:
             guard let object = try? JSONSerialization.jsonObject(with: Data(source.utf8)) as? [String: Any],
                   let scripts = object["scripts"] as? [String: Any] else { return [] }
+            let prefix = packageDirectory.isEmpty ? "" : "--prefix \(shellQuoted(packageDirectory)) "
+            let location = packageDirectory.isEmpty ? "" : " (\(packageDirectory))"
             return scripts.keys.sorted().map { name in
-                Finding(category: "Node.js", title: "npm – Skript „\(name)“ ausführen", text: "npm run \(name)")
+                Finding(category: "Node.js", title: "npm – Skript „\(name)“ ausführen\(location)", text: "npm \(prefix)run \(shellQuoted(name))")
             }
         }
     }

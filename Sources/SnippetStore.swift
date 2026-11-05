@@ -31,12 +31,18 @@ import Combine
  private let decoder = JSONDecoder()
  private var loadFailed = false
 
- /// Titles produced by the first analyzer version; used to recognise its imports.
- static let legacyScanTitles: Set<String> = [
-  "Git – Status prüfen", "Git – Änderungen vormerken", "Git – Commit erstellen", "Git – Branch wechseln", "Git – Änderungen übertragen", "Git – Änderungen prüfen",
-  "Xcode – Build oder Tests ausführen", "Xcode – Projekt generieren", "Xcode – Entwicklerwerkzeug ausführen", "Xcode – Simulator steuern",
-  "Python – Skript ausführen", "Python – Pakete verwalten", "Python – HTTP-Anfrage",
-  "Shell – Text bearbeiten", "Shell – Text durchsuchen", "Shell – Dateirechte ändern", "Shell – Rekursiv löschen"
+ /// Title → (category, regex) of the first analyzer version. Its imports carry no source marker,
+ /// so an entry only counts as one if title, category and single-line text all match the rule that produced it.
+ static let legacyScanRules: [String: (category: String, pattern: String)] = [
+  "Git – Status prüfen": ("Git", #"\bgit\s+status\b"#), "Git – Änderungen vormerken": ("Git", #"\bgit\s+add\b"#),
+  "Git – Commit erstellen": ("Git", #"\bgit\s+commit\b"#), "Git – Branch wechseln": ("Git", #"\bgit\s+checkout\b"#),
+  "Git – Änderungen übertragen": ("Git", #"\bgit\s+push\b"#), "Git – Änderungen prüfen": ("Git", #"\bgit\s+diff\b"#),
+  "Xcode – Build oder Tests ausführen": ("Xcode", #"\bxcodebuild\b"#), "Xcode – Projekt generieren": ("Xcode", #"\bxcodegen\b"#),
+  "Xcode – Entwicklerwerkzeug ausführen": ("Xcode", #"\bxcrun\b"#), "Xcode – Simulator steuern": ("Xcode", #"\bsimctl\b"#),
+  "Python – Skript ausführen": ("Python", #"\bpython3\b"#), "Python – Pakete verwalten": ("Python", #"\bpip3?\b"#),
+  "Python – HTTP-Anfrage": ("Python", #"urllib\.request"#),
+  "Shell – Text bearbeiten": ("Shell", #"\bsed\b"#), "Shell – Text durchsuchen": ("Shell", #"\bgrep\b"#),
+  "Shell – Dateirechte ändern": ("Shell", #"\bchmod\b"#), "Shell – Rekursiv löschen": ("Shell", #"rm\s+-rf"#)
  ]
 
  init(fileURL: URL? = nil) {
@@ -101,11 +107,11 @@ import Combine
     let didAccess = directory.startAccessingSecurityScopedResource()
     defer { if didAccess { directory.stopAccessingSecurityScopedResource() } }
     do {
-     let findings = try ProjectAnalyzer().scan(directory: directory)
+     let report = try ProjectAnalyzer().scanReport(directory: directory)
      self.errorMessage = nil
-     let added = self.importFindings(findings)
+     let added = self.importFindings(report.findings)
      guard self.errorMessage == nil else { return }
-     self.noticeMessage = Self.scanSummary(folder: directory.lastPathComponent, found: findings.count, added: added)
+     self.noticeMessage = Self.scanSummary(folder: directory.lastPathComponent, found: report.findings.count, added: added, unreadable: report.unreadableFiles)
     } catch {
      self.errorMessage = "Der Projektordner konnte nicht vollständig analysiert werden.\n\n\(error.localizedDescription)"
     }
@@ -113,18 +119,29 @@ import Combine
   }
  }
 
- static func scanSummary(folder: String, found: Int, added: [Snippet]) -> String {
-  guard !added.isEmpty else {
-   return found == 0 ? "In „\(folder)“ wurden keine Terminal-Befehle gefunden." : "In „\(folder)“ wurden \(found) Befehle gefunden – alle sind bereits im Tresor."
+ static func scanSummary(folder: String, found: Int, added: [Snippet], unreadable: [String] = []) -> String {
+  var summary: String
+  if added.isEmpty {
+   summary = found == 0 ? "In „\(folder)“ wurden keine Terminal-Befehle gefunden." : "In „\(folder)“ wurden \(found) Befehle gefunden – alle sind bereits im Tresor."
+  } else {
+   let perCategory = Dictionary(grouping: added, by: \.category).map { "\($0.key): \($0.value.count)" }.sorted().joined(separator: "\n")
+   summary = "\(added.count) neue Snippets aus „\(folder)“ übernommen.\n\n\(perCategory)"
   }
-  let perCategory = Dictionary(grouping: added, by: \.category).map { "\($0.key): \($0.value.count)" }.sorted().joined(separator: "\n")
-  return "\(added.count) neue Snippets aus „\(folder)“ übernommen.\n\n\(perCategory)"
+  if !unreadable.isEmpty {
+   let shown = unreadable.prefix(5).joined(separator: "\n")
+   let more = unreadable.count > 5 ? "\n… und \(unreadable.count - 5) weitere" : ""
+   summary += "\n\nAchtung: \(unreadable.count) Datei(en) konnten nicht gelesen werden (keine Berechtigung oder kein UTF-8-Text) und fehlen im Ergebnis:\n\(shown)\(more)"
+  }
+  return summary
  }
 
  // MARK: Cleanup of earlier scan imports
 
  func isScanImport(_ snippet: Snippet) -> Bool {
-  snippet.extraFields[Self.scanSourceKey] == .string(Self.scanSourceValue) || Self.legacyScanTitles.contains(snippet.title)
+  if snippet.extraFields[Self.scanSourceKey] == .string(Self.scanSourceValue) { return true }
+  guard let rule = Self.legacyScanRules[snippet.title], rule.category == snippet.category,
+        !snippet.text.contains("\n"), snippet.text == snippet.text.trimmingCharacters(in: .whitespaces) else { return false }
+  return snippet.text.range(of: rule.pattern, options: .regularExpression) != nil
  }
 
  /// Re-checks every scanned snippet with the current analyzer; manual snippets stay untouched.
