@@ -796,5 +796,54 @@
     "quelle" : "Projekt-Scan",
     "text" : "python3 setup.py",
     "title" : "Python – Skript ausführen"
+  },
+  {
+    "category" : "Xcode",
+    "id" : "6A60F01B-1AFB-4062-BDBE-8CE8B74E2161",
+    "quelle" : "Projekt-Scan",
+    "text" : "swift --version",
+    "title" : "Swift – swift ausführen"
+  },
+  {
+    "category" : "Xcode",
+    "id" : "D499BC01-1F94-4C87-A986-6105DA2DEEED",
+    "quelle" : "Projekt-Scan",
+    "text" : "xcodebuild -version",
+    "title" : "Xcode – Version anzeigen"
+  },
+  {
+    "category" : "Xcode",
+    "id" : "EBD18A41-6CD6-4255-98F7-F0A306D5AA12",
+    "quelle" : "Projekt-Scan",
+    "text" : "swift package resolve",
+    "title" : "Swift – Paket verwalten"
+  },
+  {
+    "category" : "Xcode",
+    "id" : "F0B0FC13-48B0-47DA-9515-767F0363EE90",
+    "quelle" : "Projekt-Scan",
+    "text" : "swift test",
+    "title" : "Swift – Tests ausführen"
+  },
+  {
+    "category" : "Xcode",
+    "id" : "DFCD79B7-E447-4CB0-A3ED-1C910E2C2EB8",
+    "quelle" : "Projekt-Scan",
+    "text" : "swift build --configuration release",
+    "title" : "Swift – Paket bauen"
+  },
+  {
+    "category" : "Python",
+    "id" : "C3B98DD5-101A-4EE6-A9AE-39A82B9AB5ED",
+    "quelle" : "Projekt-Scan",
+    "text" : "python3 - << 'PYEOF'",
+    "title" : "Python – Skript ausführen"
+  },
+  {
+    "category" : "Shell",
+    "id" : "D2852CD6-E0E7-4AF1-A956-1D5B09673D43",
+    "quelle" : "Projekt-Scan",
+    "text" : "chmod +x build.command",
+    "title" : "chmod – Dateirechte ändern"
   }
 ]
