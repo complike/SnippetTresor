@@ -210,6 +210,55 @@ import XCTest
   XCTAssertEqual(store.makeCleanupPlan().updates, 0)
  }
 
+ func testNestedPackageScriptsKeepTheirDirectoryAndNamesAreQuoted() throws {
+  let root = try temporaryProject([
+   "package.json": #"{"scripts":{"build":"tsc"}}"#,
+   "frontend/package.json": #"{"scripts":{"build":"vite build","build; touch /tmp/pwned":"x"}}"#,
+   "my app/package.json": #"{"scripts":{"start":"node ."}}"#
+  ])
+  let texts = Set(try ProjectAnalyzer().scan(directory: root).map(\.text))
+  XCTAssertEqual(texts, [
+   "npm run build",
+   "npm --prefix frontend run build",
+   "npm --prefix frontend run 'build; touch /tmp/pwned'",
+   "npm --prefix 'my app' run start"
+  ])
+  XCTAssertEqual(ProjectAnalyzer.shellQuoted("it's"), #"'it'\''s'"#)
+  XCTAssertEqual(ProjectAnalyzer.shellQuoted(""), "''")
+ }
+
+ func testUnreadableCandidateFilesAreReported() throws {
+  let root = try temporaryProject(["ok.sh": "git status", "locked/deploy.sh": "git push", "binary.sh": "x", "notes.txt": "ignored"])
+  try Data([0xFF, 0xFE, 0x00, 0xC3]).write(to: root.appendingPathComponent("binary.sh"))
+  let locked = root.appendingPathComponent("locked/deploy.sh")
+  try FileManager.default.setAttributes([.posixPermissions: 0o000], ofItemAtPath: locked.path)
+  addTeardownBlock { try? FileManager.default.setAttributes([.posixPermissions: 0o644], ofItemAtPath: locked.path) }
+  let report = try ProjectAnalyzer().scanReport(directory: root)
+  XCTAssertEqual(report.findings.map(\.text), ["git status"])
+  XCTAssertEqual(Set(report.unreadableFiles), ["binary.sh", "locked/deploy.sh"])
+  let summary = SnippetStore.scanSummary(folder: "demo", found: 1, added: [], unreadable: report.unreadableFiles)
+  XCTAssertTrue(summary.contains("2 Datei(en) konnten nicht gelesen werden"))
+ }
+
+ func testCleanupKeepsManualSnippetsThatOnlyShareALegacyTitle() throws {
+  let url = try temporaryURL()
+  let json = """
+  [
+   {"title":"Git – Status prüfen","category":"Git","text":"Notiz: vor dem Status-Check das Repo sichern"},
+   {"title":"Git – Status prüfen","category":"Notizen","text":"git status ist kaputt, siehe Ticket"},
+   {"title":"Git – Status prüfen","category":"Git","text":"git status zeigt main; der Ordner ist noch unversioniert."}
+  ]
+  """
+  try Data(json.utf8).write(to: url)
+  let store = SnippetStore(fileURL: url)
+  XCTAssertFalse(store.isScanImport(store.snippets[0]))
+  XCTAssertFalse(store.isScanImport(store.snippets[1]))
+  XCTAssertTrue(store.isScanImport(store.snippets[2]))
+  let plan = store.makeCleanupPlan()
+  XCTAssertEqual(plan.removals, 1)
+  XCTAssertEqual(plan.result.map(\.text), ["Notiz: vor dem Status-Check das Repo sichern", "git status ist kaputt, siehe Ticket"])
+ }
+
  func testFailedInitialWriteIsReportedAndNoCrash() {
   let store = SnippetStore(fileURL: URL(fileURLWithPath:"/dev/null/snippet-tresor/prompts.json"))
   XCTAssertNotNil(store.errorMessage)
