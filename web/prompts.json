@@ -15082,5 +15082,35 @@
     "id" : "9A90C4F6-97CF-4948-916C-82FD4EE38576",
     "text" : "python3 quiz_generator_v3.py",
     "title" : "Python – Skript ausführen"
+  },
+  {
+    "category" : "Python",
+    "id" : "62264EC6-6861-40BA-A13F-837BB682CACE",
+    "text" : "Das Skript versucht, Paramiko bei fehlendem Import automatisch mit `pip` zu installieren. Alternativ kann es vorab installiert werden:",
+    "title" : "Python – Pakete verwalten"
+  },
+  {
+    "category" : "Python",
+    "id" : "E063C2D0-6B95-4547-B1FD-AEEF7ABBC238",
+    "text" : "python3 -m pip install paramiko",
+    "title" : "Python – Skript ausführen"
+  },
+  {
+    "category" : "Python",
+    "id" : "941E7CDC-0372-4D53-96D7-B35452440D35",
+    "text" : "python3 setup.py",
+    "title" : "Python – Skript ausführen"
+  },
+  {
+    "category" : "Python",
+    "id" : "AA34F4B9-B477-4615-B9E4-E1F25DD3B17C",
+    "text" : "print(\"[FEHLER] paramiko nicht installiert. Installiere mit: pip3 install paramiko\")",
+    "title" : "Python – Pakete verwalten"
+  },
+  {
+    "category" : "Python",
+    "id" : "CA334246-9448-408A-989F-0F144058110B",
+    "text" : "os.system(f\"{sys.executable} -m pip install paramiko\")",
+    "title" : "Python – Pakete verwalten"
   }
 ]
