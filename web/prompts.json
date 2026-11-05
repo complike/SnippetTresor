@@ -845,5 +845,82 @@
     "quelle" : "Projekt-Scan",
     "text" : "chmod +x build.command",
     "title" : "chmod – Dateirechte ändern"
+  },
+  {
+    "category" : "Build",
+    "id" : "23C03A27-3777-43C0-B9E9-1B8346F609C2",
+    "quelle" : "Projekt-Scan",
+    "text" : "make selftest js-check",
+    "title" : "make – Make-Ziel ausführen"
+  },
+  {
+    "category" : "Git",
+    "id" : "7E1BCA0C-EE15-4E19-A88A-37E0B3E73CF0",
+    "quelle" : "Projekt-Scan",
+    "text" : "git status --short",
+    "title" : "Git – Status prüfen"
+  },
+  {
+    "category" : "Git",
+    "id" : "A6234F77-8BBC-4F2E-8CE3-900AAAB540FF",
+    "quelle" : "Projekt-Scan",
+    "text" : "git add Sources\/ Tests\/ KI_STATUS.md GIT-STATUS.md FEHLER-REGISTER.md PROTOKOLL.md CODE-CHANGELOG.md docs\/verification\/",
+    "title" : "Git – Änderungen vormerken"
+  },
+  {
+    "category" : "Git",
+    "id" : "BB007A2C-13B3-4A2A-AAED-7C037BC90962",
+    "quelle" : "Projekt-Scan",
+    "text" : "git diff --cached --check",
+    "title" : "Git – Änderungen anzeigen"
+  },
+  {
+    "category" : "Git",
+    "id" : "71345986-9E44-4D2D-9DCA-73B288BEE7F4",
+    "quelle" : "Projekt-Scan",
+    "text" : "git commit -m \"fix(grouping): normalize PC group names in management, rename and deletion (F-5)\"",
+    "title" : "Git – Commit erstellen"
+  },
+  {
+    "category" : "Git",
+    "id" : "62206638-F8D3-49F3-AE69-E61E04797000",
+    "quelle" : "Projekt-Scan",
+    "text" : "git log -1 --oneline",
+    "title" : "Git – Verlauf anzeigen"
+  },
+  {
+    "category" : "Python",
+    "id" : "3E5BF9DA-1D2C-4762-8DA0-3873C26FB788",
+    "quelle" : "Projekt-Scan",
+    "text" : "python3 -c \"import paramiko\" 2>\/dev\/null || python3 -m pip install --quiet paramiko",
+    "title" : "Python – Skript ausführen"
+  },
+  {
+    "category" : "Python",
+    "id" : "DEA9075F-9322-480F-8C8E-13BB90A01420",
+    "quelle" : "Projekt-Scan",
+    "text" : "python3 complike_manager.py",
+    "title" : "Python – Skript ausführen"
+  },
+  {
+    "category" : "Python",
+    "id" : "0B2F4CE0-D17D-47A3-8CD0-6F5AE1EF3C80",
+    "quelle" : "Projekt-Scan",
+    "text" : "python3 -m pip install --quiet paramiko",
+    "title" : "Python – Modul pip ausführen"
+  },
+  {
+    "category" : "Python",
+    "id" : "AAC03260-C971-4658-AAEE-DAFE89AD9187",
+    "quelle" : "Projekt-Scan",
+    "text" : "pip3 install paramiko",
+    "title" : "pip – Paket installieren"
+  },
+  {
+    "category" : "Xcode",
+    "id" : "4E6A127B-EBB4-45BD-A681-740D496F0664",
+    "quelle" : "Projekt-Scan",
+    "text" : "xcodegen generate",
+    "title" : "Xcode – Projekt generieren"
   }
 ]
