@@ -20,8 +20,23 @@ if [[ "$(git branch --show-current)" != "main" ]]; then
   exit 0
 fi
 
+# Serialize deployments: the app starts one per save, and parallel git commits would collide.
+LOCK="$(git rev-parse --absolute-git-dir)/snippet-tresor-deploy.lock"
+for _ in $(seq 1 120); do
+  mkdir "$LOCK" 2>/dev/null && break
+  sleep 0.5
+done
+[[ -d "$LOCK" ]] || { echo "Fehler: Deployment-Sperre konnte nicht übernommen werden." >&2; exit 1; }
+trap 'rmdir "$LOCK" 2>/dev/null || true' EXIT
+
+# Pick up merged changes from GitHub first, otherwise the push is rejected.
+if ! git pull --ff-only --quiet origin main; then
+  echo "Fehler: main konnte nicht von GitHub aktualisiert werden (lokale Abweichung?)." >&2
+  exit 1
+fi
+
 cp "$SOURCE" "$TARGET"
-git add web/index.html web/prompts.json
+git add web/prompts.json
 if git diff --cached --quiet; then
   echo "Keine Dashboard-Änderungen; kein Commit erforderlich."
   exit 0

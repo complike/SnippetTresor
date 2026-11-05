@@ -3,25 +3,54 @@ import AppKit
 import Combine
 
 @MainActor final class SnippetStore: ObservableObject {
+ static let dashboardURL = URL(string: "https://complike.github.io/SnippetTresor/web/")!
+ static let scanSourceKey = "quelle"
+ static let scanSourceValue = "Projekt-Scan"
+
+ enum SyncState: Equatable {
+  case idle, running, success(Date), failed(String), disabled
+ }
+ struct CleanupPlan: Identifiable {
+  let id = UUID()
+  let removals: Int
+  let updates: Int
+  let result: [Snippet]
+ }
+
  @Published private(set) var snippets: [Snippet] = []
  @Published var errorMessage: String?
+ @Published var noticeMessage: String?
  @Published var editorRequest: EditorRequest?
  @Published var pendingDelete: Snippet?
+ @Published var pendingCleanup: CleanupPlan?
+ @Published private(set) var isScanning = false
+ @Published private(set) var syncState: SyncState = .idle
  struct EditorRequest: Identifiable { let id = UUID(); let snippet: Snippet? }
  private let fileURL: URL
  private let encoder: JSONEncoder
  private let decoder = JSONDecoder()
  private var loadFailed = false
 
+ /// Titles produced by the first analyzer version; used to recognise its imports.
+ static let legacyScanTitles: Set<String> = [
+  "Git – Status prüfen", "Git – Änderungen vormerken", "Git – Commit erstellen", "Git – Branch wechseln", "Git – Änderungen übertragen", "Git – Änderungen prüfen",
+  "Xcode – Build oder Tests ausführen", "Xcode – Projekt generieren", "Xcode – Entwicklerwerkzeug ausführen", "Xcode – Simulator steuern",
+  "Python – Skript ausführen", "Python – Pakete verwalten", "Python – HTTP-Anfrage",
+  "Shell – Text bearbeiten", "Shell – Text durchsuchen", "Shell – Dateirechte ändern", "Shell – Rekursiv löschen"
+ ]
+
  init(fileURL: URL? = nil) {
   let support = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask)[0].appendingPathComponent("Snippet-Tresor", isDirectory: true)
   self.fileURL = fileURL ?? support.appendingPathComponent("prompts.json")
   encoder = JSONEncoder(); encoder.outputFormatting = [.prettyPrinted, .sortedKeys]
+  if !isDefaultLibrary { syncState = .disabled }
   do { try load() } catch { loadFailed = true; errorMessage = "Die Bibliothek konnte nicht geladen werden. Die Datei wurde nicht überschrieben.\n\n\(error.localizedDescription)" }
  }
  var categories: [String] { Array(Set(snippets.map(\.category).filter { !$0.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty })).sorted() }
+ func count(in category: String) -> Int { category == "Alle" ? snippets.count : snippets.filter { $0.category == category }.count }
  func requestNewSnippet() { editorRequest = EditorRequest(snippet: nil) }
  func requestEdit(_ snippet: Snippet) { editorRequest = EditorRequest(snippet: snippet) }
+ func openDashboard() { NSWorkspace.shared.open(Self.dashboardURL) }
  func filtered(category: String, query: String) -> [Snippet] {
   let needle = query.folding(options: [.caseInsensitive, .diacriticInsensitive], locale: .current)
   return snippets.filter { item in
@@ -38,17 +67,107 @@ import Combine
   } else { next.append(item) }
   commit(next)
  }
- func importFindings(_ findings: [ProjectAnalyzer.Finding]) {
-  guard !loadFailed else { errorMessage = "Import nicht möglich, weil die vorhandene JSON-Datei nicht geladen werden konnte."; return }
-  let existingTexts = Set(snippets.map(\.text))
-  var seen = existingTexts
+
+ /// Adds findings that are not yet in the library. Returns the snippets that were added.
+ @discardableResult
+ func importFindings(_ findings: [ProjectAnalyzer.Finding]) -> [Snippet] {
+  guard !loadFailed else { errorMessage = "Import nicht möglich, weil die vorhandene JSON-Datei nicht geladen werden konnte."; return [] }
+  var seen = Set(snippets.map(\.text))
   var additions: [Snippet] = []
   for finding in findings where seen.insert(finding.text).inserted {
-   additions.append(Snippet(title: finding.title, category: finding.category, text: finding.text))
+   additions.append(Snippet(title: finding.title, category: finding.category, text: finding.text, extraFields: [Self.scanSourceKey: .string(Self.scanSourceValue)]))
   }
-  guard !additions.isEmpty else { return }
+  guard !additions.isEmpty else { return [] }
   commit(snippets + additions)
+  return errorMessage == nil ? additions : []
  }
+
+ func scanProject() {
+  guard !isScanning else { return }
+  let panel = NSOpenPanel()
+  panel.title = "Projektordner auswählen"
+  panel.message = "Wähle einen Projektordner. Echte Terminal-Befehle werden erkannt und nach Kategorien sortiert übernommen."
+  panel.prompt = "Scannen"
+  panel.canChooseDirectories = true
+  panel.canChooseFiles = false
+  panel.allowsMultipleSelection = false
+  panel.canCreateDirectories = false
+  isScanning = true
+  panel.begin { [weak self] response in
+   Task { @MainActor in
+    guard let self else { return }
+    defer { self.isScanning = false }
+    guard response == .OK, let directory = panel.url else { return }
+    let didAccess = directory.startAccessingSecurityScopedResource()
+    defer { if didAccess { directory.stopAccessingSecurityScopedResource() } }
+    do {
+     let findings = try ProjectAnalyzer().scan(directory: directory)
+     self.errorMessage = nil
+     let added = self.importFindings(findings)
+     guard self.errorMessage == nil else { return }
+     self.noticeMessage = Self.scanSummary(folder: directory.lastPathComponent, found: findings.count, added: added)
+    } catch {
+     self.errorMessage = "Der Projektordner konnte nicht vollständig analysiert werden.\n\n\(error.localizedDescription)"
+    }
+   }
+  }
+ }
+
+ static func scanSummary(folder: String, found: Int, added: [Snippet]) -> String {
+  guard !added.isEmpty else {
+   return found == 0 ? "In „\(folder)“ wurden keine Terminal-Befehle gefunden." : "In „\(folder)“ wurden \(found) Befehle gefunden – alle sind bereits im Tresor."
+  }
+  let perCategory = Dictionary(grouping: added, by: \.category).map { "\($0.key): \($0.value.count)" }.sorted().joined(separator: "\n")
+  return "\(added.count) neue Snippets aus „\(folder)“ übernommen.\n\n\(perCategory)"
+ }
+
+ // MARK: Cleanup of earlier scan imports
+
+ func isScanImport(_ snippet: Snippet) -> Bool {
+  snippet.extraFields[Self.scanSourceKey] == .string(Self.scanSourceValue) || Self.legacyScanTitles.contains(snippet.title)
+ }
+
+ /// Re-checks every scanned snippet with the current analyzer; manual snippets stay untouched.
+ func makeCleanupPlan() -> CleanupPlan {
+  var result: [Snippet] = []
+  var seen = Set<String>()
+  var removals = 0, updates = 0
+  for item in snippets {
+   guard isScanImport(item) else { result.append(item); seen.insert(item.text); continue }
+   guard let finding = ProjectAnalyzer.classify(item.text), seen.insert(item.text).inserted else { removals += 1; continue }
+   var updated = item
+   updated.title = finding.title
+   updated.category = finding.category
+   updated.extraFields[Self.scanSourceKey] = .string(Self.scanSourceValue)
+   if updated != item { updates += 1 }
+   result.append(updated)
+  }
+  return CleanupPlan(removals: removals, updates: updates, result: result)
+ }
+
+ func requestCleanup() {
+  let plan = makeCleanupPlan()
+  if plan.removals == 0 && plan.updates == 0 { noticeMessage = "Alle importierten Snippets sind bereits sauber." }
+  else { pendingCleanup = plan }
+ }
+
+ func performCleanup(_ plan: CleanupPlan) {
+  pendingCleanup = nil
+  guard !loadFailed else { errorMessage = "Bereinigen nicht möglich, weil die vorhandene JSON-Datei nicht geladen werden konnte."; return }
+  do {
+   let formatter = DateFormatter(); formatter.dateFormat = "yyyyMMdd-HHmmss"
+   let backup = fileURL.deletingLastPathComponent().appendingPathComponent("prompts.backup-\(formatter.string(from: Date())).json")
+   try encoder.encode(snippets).write(to: backup, options: .atomic)
+   errorMessage = nil
+   commit(plan.result)
+   if errorMessage == nil {
+    noticeMessage = "\(plan.removals) Einträge entfernt, \(plan.updates) neu kategorisiert.\n\nBackup: \(backup.lastPathComponent)"
+   }
+  } catch {
+   errorMessage = "Backup konnte nicht angelegt werden – es wurde nichts verändert.\n\n\(error.localizedDescription)"
+  }
+ }
+
  func delete(_ snippet: Snippet) {
   guard snippets.contains(where: { $0.id == snippet.id }) else { errorMessage = SnippetStoreError.missingEntry.localizedDescription; return }
   commit(snippets.filter { $0.id != snippet.id }); pendingDelete = nil
@@ -71,11 +190,14 @@ import Combine
    errorMessage = "Speichern fehlgeschlagen. Die bisherigen Daten bleiben erhalten.\n\n\(error.localizedDescription)"
   }
  }
- private func launchDashboardDeploymentIfConfigured() {
+ private var isDefaultLibrary: Bool {
   let supportURL = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask)[0]
    .appendingPathComponent("Snippet-Tresor", isDirectory: true)
    .appendingPathComponent("prompts.json")
-  guard fileURL.standardizedFileURL == supportURL.standardizedFileURL else { return }
+  return fileURL.standardizedFileURL == supportURL.standardizedFileURL
+ }
+ private func launchDashboardDeploymentIfConfigured() {
+  guard isDefaultLibrary else { return }
 
   let environment = ProcessInfo.processInfo.environment
   let scriptURL: URL
@@ -86,26 +208,38 @@ import Combine
     .appendingPathComponent("Downloads/Eigene Apps/SnippetTresor/scripts/deploy_to_github_pages.sh")
   }
   guard FileManager.default.isExecutableFile(atPath: scriptURL.path) else {
+   syncState = .failed("Deployment-Skript fehlt")
    errorMessage = "Snippet gespeichert, aber Dashboard-Deployment-Skript fehlt oder ist nicht ausführbar: \(scriptURL.path)"
    return
   }
 
+  syncState = .running
   DispatchQueue.global(qos: .utility).async { [weak self] in
    let process = Process()
+   let errorPipe = Pipe()
    process.executableURL = URL(fileURLWithPath: "/bin/bash")
    process.arguments = [scriptURL.path]
    process.standardOutput = FileHandle.nullDevice
-   process.standardError = FileHandle.nullDevice
+   process.standardError = errorPipe
    process.terminationHandler = { [weak self] process in
-    guard process.terminationStatus != 0 else { return }
+    let status = process.terminationStatus
+    let stderr = String(data: errorPipe.fileHandleForReading.readDataToEndOfFile(), encoding: .utf8)?
+     .split(separator: "\n").last.map(String.init) ?? ""
     DispatchQueue.main.async {
-     self?.errorMessage = "Snippet gespeichert, aber Dashboard-Deployment fehlgeschlagen (Exit-Code \(process.terminationStatus))."
+     guard let self else { return }
+     if status == 0 {
+      self.syncState = .success(Date())
+     } else {
+      self.syncState = .failed(stderr.isEmpty ? "Exit-Code \(status)" : stderr)
+      self.errorMessage = "Snippet gespeichert, aber Dashboard-Deployment fehlgeschlagen (Exit-Code \(status)).\(stderr.isEmpty ? "" : "\n\n\(stderr)")"
+     }
     }
    }
    do {
     try process.run()
    } catch {
     DispatchQueue.main.async {
+     self?.syncState = .failed(error.localizedDescription)
      self?.errorMessage = "Snippet gespeichert, Dashboard-Deployment konnte nicht gestartet werden: \(error.localizedDescription)"
     }
    }
