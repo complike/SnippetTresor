@@ -7,6 +7,16 @@ import XCTest
   try FileManager.default.createDirectory(at: dir, withIntermediateDirectories: true)
   return dir.appendingPathComponent("prompts.json")
  }
+ private func temporaryProject(_ files: [String: String]) throws -> URL {
+  let root = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString, isDirectory: true)
+  for (path, content) in files {
+   let url = root.appendingPathComponent(path)
+   try FileManager.default.createDirectory(at: url.deletingLastPathComponent(), withIntermediateDirectories: true)
+   try content.write(to: url, atomically: true, encoding: .utf8)
+  }
+  addTeardownBlock { try? FileManager.default.removeItem(at: root) }
+  return root
+ }
 
  func testLegacyExtraFieldsSurviveDecodeEditAndSave() throws {
   let url = try temporaryURL()
@@ -53,57 +63,104 @@ import XCTest
   XCTAssertTrue(store.snippets.isEmpty)
  }
 
- func testProjectAnalyzerClassifiesSupportedCommandsAndIgnoresOtherFiles() throws {
-  let root = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString, isDirectory: true)
-  try FileManager.default.createDirectory(at: root, withIntermediateDirectories: true)
-  defer { try? FileManager.default.removeItem(at: root) }
-  try "git status --short\nxcodebuild build\npython3 tool.py\nrm -rf old\necho hello".write(to: root.appendingPathComponent("WORKFLOW.md"), atomically: true, encoding: .utf8)
-  try "git commit -m test".write(to: root.appendingPathComponent("ignored.txt"), atomically: true, encoding: .utf8)
-  let findings = try ProjectAnalyzer().scan(directory: root)
-  XCTAssertEqual(findings.map(\.category), ["Git", "Xcode", "Python", "Shell"])
-  XCTAssertEqual(findings.first?.title, "Git – Status prüfen")
-  XCTAssertFalse(findings.contains { $0.text == "echo hello" })
+ // MARK: Analyzer – line classification
+
+ func testClassifyAcceptsRealCommandsWithCategoryAndTitle() throws {
+  let cases: [(String, String, String)] = [
+   ("git push origin main", "Git", "Git – Änderungen hochladen"),
+   ("sudo xcodebuild -scheme App test", "Xcode", "Xcode – Tests ausführen"),
+   ("brew install wget", "Homebrew", "Homebrew – Paket installieren"),
+   ("python3 -m venv .venv", "Python", "Python – Virtuelle Umgebung anlegen"),
+   ("pip install -r requirements.txt", "Python", "pip – Paket installieren"),
+   ("npm ci", "Node.js", "npm – Saubere Installation"),
+   ("lsof -i -P -n | grep ESTABLISHED", "Netzwerk", "lsof – Offene Ports und Dateien anzeigen"),
+   ("defaults write com.apple.finder AppleShowAllFiles -bool true", "macOS", "defaults – Einstellung setzen"),
+   ("chmod +x run.sh", "Shell", "chmod – Dateirechte ändern"),
+   ("$ docker compose up -d", "Docker", "Docker – Compose ausführen"),
+   ("ollama pull llama3", "KI", "Ollama – Modell laden"),
+   ("FOO=1 make build", "Build", "make – Make-Ziel ausführen"),
+   ("rm -rf ~/Library/Caches/MyApp", "Shell", "rm – Löschen"),
+   ("ls $HOME/Library", "Shell", "ls – Dateien auflisten")
+  ]
+  for (line, category, title) in cases {
+   let finding = try XCTUnwrap(ProjectAnalyzer.classify(line), line)
+   XCTAssertEqual(finding.category, category, line)
+   XCTAssertEqual(finding.title, title, line)
+  }
+  XCTAssertEqual(ProjectAnalyzer.classify("$ docker compose up -d")?.text, "docker compose up -d")
  }
 
- func testProjectAnalyzerScansEverySupportedFileTypeAndIgnoresUnsupportedFiles() throws {
-  let root = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString, isDirectory: true)
-  try FileManager.default.createDirectory(at: root, withIntermediateDirectories: true)
-  defer { try? FileManager.default.removeItem(at: root) }
-
-  let fixtures: [(String, String)] = [
-   ("run.sh", "chmod +x run.sh"),
-   ("tool.py", "python3 tool.py"),
-   ("notes.md", "git status --porcelain"),
-   ("Makefile", "xcodebuild build"),
-   ("makefile", "git add notes.md"),
-   ("GNUmakefile", "git diff --stat"),
-   ("WORKFLOW.md", "git push origin main")
+ func testClassifyRejectsCodeProseAndScriptInternals() {
+  let junk = [
+   "from pip import __file__ as pip_location",
+   "# portable across different pip versions.",
+   "class _CookieCompatRequest(urllib.request.Request):",
+   "os.chmod(outfile, (zinfo.external_attr >> 16) & 0x1FF)",
+   "log.debug(\"chmod failed: %s\", e)",
+   "if [[ -f \"$HISTORY_FILE\" ]] && command -v python3 &>/dev/null; then",
+   "git diff --check: keine gemeldeten Fehler.",
+   "F-4 [MITTEL]: FIXED – git status zeigt ein sauberes Arbeitsverzeichnis (main).",
+   "sudo ./ghostapfs_recovery $DEV 0 / 2>&1 | sed -n -e '/x/p' >> $OUT",
+   "version=$(\"$cmd\" --version 2>&1 | grep -oE '[0-9]+')",
+   "python3 -m py_compile snippet_tresor.py tests/test_storage.py – erfolgreich.",
+   "echo hello",
+   "cd build",
+   "./scripts/build.sh",
+   "git checkout \"$1\"",
+   "grep foo |",
+   "python3 -c '",
+   "python3 = get_bool_opt(options, 'python3', True)",
+   "python -m pip ...",
+   "pip also supports installing from \"requirements files\"",
+   "help=\"Run pip with the specified Python interpreter.\",",
+   "ACTUAL=$(git diff --unified=0 -- TODO.md)",
+   "pip install openai[{extra}]",
+   "rm -rf",
+   ""
   ]
-  for (index, fixture) in fixtures.enumerated() {
-   let fileDirectory = root.appendingPathComponent("fixture-\(index)", isDirectory: true)
-   try FileManager.default.createDirectory(at: fileDirectory, withIntermediateDirectories: true)
-   try fixture.1.write(to: fileDirectory.appendingPathComponent(fixture.0), atomically: true, encoding: .utf8)
-  }
-  try "git commit -m ignored".write(to: root.appendingPathComponent("ignored.txt"), atomically: true, encoding: .utf8)
+  for line in junk { XCTAssertNil(ProjectAnalyzer.classify(line), line) }
+ }
 
+ // MARK: Analyzer – folder scan
+
+ func testScanExtractsCommandsFromScriptsMarkdownMakefilesAndPackageJSON() throws {
+  let root = try temporaryProject([
+   "run.sh": "#!/bin/bash\nset -e\n# Kommentar\necho start\nbrew install jq\nxcodebuild -scheme App \\\n  -configuration Release build\nif [ -f x ]; then\n  git status --short\nfi\ncp \"$1\" out\n",
+   "README.md": "Prosa mit git diff --check im Text.\n\n```bash\ngit clone https://github.com/a/b.git\nnpm install\n```\n\n```swift\nlet x = \"git push\"\n```\n\n```console\n$ docker ps\nCONTAINER ID   IMAGE\n```\n",
+   "Makefile": "build:\n\t@xcodegen generate\n\tswift build -c release\nVAR = git status\n",
+   "package.json": #"{"name":"demo","scripts":{"test":"jest","build":"tsc"}}"#,
+   "tool.py": "import os\nos.system('git push')\n",
+   "notes.txt": "git commit -m ignored",
+   "node_modules/dep/install.sh": "npm publish",
+   "build/out.sh": "git push --force"
+  ])
+  let texts = Set(try ProjectAnalyzer().scan(directory: root).map(\.text))
+  XCTAssertEqual(texts, [
+   "brew install jq",
+   "xcodebuild -scheme App -configuration Release build",
+   "git status --short",
+   "git clone https://github.com/a/b.git",
+   "npm install",
+   "docker ps",
+   "xcodegen generate",
+   "swift build -c release",
+   "npm run build",
+   "npm run test"
+  ])
+ }
+
+ func testRepeatedScanAndImportCreateNoDuplicatesAndMarkSource() throws {
+  let root = try temporaryProject(["a/run.sh": "git status\nbrew update", "b/run.sh": "git status"])
   let analyzer = ProjectAnalyzer()
-  let firstScan = try analyzer.scan(directory: root)
-  let secondScan = try analyzer.scan(directory: root)
-  XCTAssertEqual(firstScan.count, fixtures.count)
-  for (_, expectedText) in fixtures {
-   XCTAssertTrue(firstScan.contains { $0.text == expectedText }, "Expected to scan supported fixture content: \(expectedText)")
-  }
-  XCTAssertEqual(Set(secondScan.map(\.text)), Set(firstScan.map(\.text)))
-  XCTAssertFalse(firstScan.contains { $0.text == "git commit -m ignored" })
-
-  let storeURL = try temporaryURL()
-  try Data("[]".utf8).write(to: storeURL)
-  let store = SnippetStore(fileURL: storeURL)
-  store.importFindings(firstScan)
-  let countAfterFirstImport = store.snippets.count
-  store.importFindings(secondScan)
-  XCTAssertEqual(countAfterFirstImport, fixtures.count)
-  XCTAssertEqual(store.snippets.count, countAfterFirstImport, "A complete repeated scan/import must not create duplicate snippets")
+  let first = try analyzer.scan(directory: root)
+  XCTAssertEqual(first.count, 2)
+  let url = try temporaryURL()
+  try Data("[]".utf8).write(to: url)
+  let store = SnippetStore(fileURL: url)
+  XCTAssertEqual(store.importFindings(first).count, 2)
+  XCTAssertEqual(store.importFindings(try analyzer.scan(directory: root)).count, 0)
+  XCTAssertEqual(store.snippets.count, 2)
+  XCTAssertTrue(store.snippets.allSatisfy(store.isScanImport))
  }
 
  func testAnalyzerImportIsIdempotentAndPreservesExistingLegacyFields() throws {
@@ -119,6 +176,38 @@ import XCTest
   let saved = try XCTUnwrap(JSONSerialization.jsonObject(with: Data(contentsOf: url)) as? [[String: Any]])
   XCTAssertEqual(saved[0]["legacy"] as? String, "keep")
   XCTAssertEqual(saved[1]["text"] as? String, "git commit -m test")
+ }
+
+ // MARK: Cleanup
+
+ func testCleanupRemovesLegacyJunkRecategorizesRealCommandsAndKeepsManualSnippets() throws {
+  let url = try temporaryURL()
+  let json = """
+  [
+   {"title":"Python – Pakete verwalten","category":"Python","text":"from pip._internal.utils import misc"},
+   {"title":"Python – Pakete verwalten","category":"Python","text":"pip install requests"},
+   {"title":"Shell – Text durchsuchen","category":"Shell","text":"lsof -i -P -n | grep LISTEN"},
+   {"title":"Git – Änderungen prüfen","category":"Git","text":"git diff --check: keine Fehler."},
+   {"title":"Offline Scan über Defender","category":"Windows 11","text":"some manual text"},
+   {"title":"Git – Status","category":"Git","text":"git status --short --branch"}
+  ]
+  """
+  try Data(json.utf8).write(to: url)
+  let store = SnippetStore(fileURL: url)
+  let plan = store.makeCleanupPlan()
+  XCTAssertEqual(plan.removals, 2)
+  XCTAssertEqual(plan.updates, 2)
+  store.performCleanup(plan)
+  XCTAssertNil(store.errorMessage)
+  XCTAssertEqual(store.snippets.map(\.text), ["pip install requests", "lsof -i -P -n | grep LISTEN", "some manual text", "git status --short --branch"])
+  XCTAssertEqual(store.snippets[1].category, "Netzwerk")
+  XCTAssertEqual(store.snippets[3].title, "Git – Status")
+  let backups = try FileManager.default.contentsOfDirectory(atPath: url.deletingLastPathComponent().path).filter { $0.hasPrefix("prompts.backup-") }
+  XCTAssertEqual(backups.count, 1)
+  let backup = try JSONDecoder().decode([Snippet].self, from: Data(contentsOf: url.deletingLastPathComponent().appendingPathComponent(backups[0])))
+  XCTAssertEqual(backup.count, 6)
+  XCTAssertEqual(store.makeCleanupPlan().removals, 0)
+  XCTAssertEqual(store.makeCleanupPlan().updates, 0)
  }
 
  func testFailedInitialWriteIsReportedAndNoCrash() {
